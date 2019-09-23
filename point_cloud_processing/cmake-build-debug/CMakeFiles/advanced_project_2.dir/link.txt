@@ -1,1 +1,0 @@
-/usr/bin/c++  -g   CMakeFiles/advanced_project_2.dir/main.cpp.o  -o advanced_project_2 
