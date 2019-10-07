@@ -13,8 +13,7 @@ use_cuda = torch.cuda.is_available()
 if use_cuda:
     print("CUDA supported GPU detected")
 
-thermal_images_dir_train = "/data3/asahmed/advanced_project_2/project/deep_learning/data/CamThermal/train/images"
-thermal_images_dir_test = "/data3/asahmed/advanced_project_2/project/deep_learning/data/CamThermal/test/images"
+thermal_images_dir_train = "../data/CamThermal/train/images"
 
 # training parameters
 params = {"batch_size": 1, "shuffle": True, "num_workers": 2}
@@ -23,9 +22,6 @@ max_epochs = 5
 # load datasets
 ds_train = ImageDataset(thermal_images_dir_train)
 train_loader = DataLoader(ds_train, **params)
-
-ds_test = ImageDataset(thermal_images_dir_test)
-test_loader = DataLoader(ds_test, **params)
 
 net = ThermalImageCNN()
 
@@ -39,7 +35,7 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
 # model_save_path
-save_path = "model"
+save_path = "model_v2"
 
 # train loop
 for epoch in range(max_epochs):
@@ -51,6 +47,7 @@ for epoch in range(max_epochs):
 
         optimizer.zero_grad()
         outputs = net(image_tensor)
+        print(outputs)
         loss = criterion(outputs, label)
         loss.backward()
         optimizer.step()
