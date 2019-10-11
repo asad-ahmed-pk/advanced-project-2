@@ -13,12 +13,13 @@ namespace Pipeline
     class HeatThreshold : public PipelineElement
     {
     public:
-        HeatThreshold(const std::string &name);
+        HeatThreshold(const std::string &name, int threshold, int maxValue);
 
-        void Process(const cv::Mat& input, const std::string& filename = "") const;
+        void Process(const cv::Mat& input, cv::Mat& output, const std::string& filename = "") const;
 
     private:
-        int m_ThresholdParam;
+        int m_Threshold;
+        int m_MaxValue;
     };
 }
 

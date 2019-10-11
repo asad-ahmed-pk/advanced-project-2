@@ -6,6 +6,8 @@
 #include "pipeline/PipelineElement.hpp"
 #include "config/config.hpp"
 
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/path.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
 namespace Pipeline
@@ -24,6 +26,14 @@ namespace Pipeline
     // Write image to disk
     void PipelineElement::SaveResult(const cv::Mat &output, const std::string& filename) const
     {
-        cv::imwrite(Config::PIPELINE_OUTPUT_DIR + filename + Config::IMAGE_OUTPUT_EXT, output);
+        std::string elementPath { Config::PIPELINE_OUTPUT_DIR + m_Name + "/" };
+        std::string fullPath =  elementPath + filename + Config::IMAGE_OUTPUT_EXT;
+
+        boost::filesystem::path path(elementPath);
+        if (!boost::filesystem::exists(elementPath)) {
+            boost::filesystem::create_directories(elementPath);
+        }
+
+        cv::imwrite(fullPath, output);
     }
 }

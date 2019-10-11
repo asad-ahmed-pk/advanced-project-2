@@ -25,7 +25,7 @@ namespace Pipeline
         /// \param input The input image to process
         /// \param filename If not an empty string - will be used to save the output of this processing
         /// Note: filename should not include the file extension
-        virtual void Process(const cv::Mat& input, const std::string& filename = "") const = 0;
+        virtual void Process(const cv::Mat& input, cv::Mat& output, const std::string& filename = "") const = 0;
 
     protected:
         void SaveResult(const cv::Mat& output, const std::string& filename) const;

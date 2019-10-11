@@ -12,16 +12,15 @@
 namespace Pipeline
 {
     // Constructor
-    HeatThreshold::HeatThreshold(const std::string &name) : PipelineElement(name)
+    HeatThreshold::HeatThreshold(const std::string &name, int threshold, int maxValue) : PipelineElement(name), m_Threshold(threshold), m_MaxValue(maxValue)
     {
-        m_ThresholdParam = Config::ConfigParser::GetInstance().GetValue<int>("config.pipeline.heat_threshold.threshold_intensity");
+
     }
 
     // Process
-    void HeatThreshold::Process(const cv::Mat& input, const std::string& filename) const
+    void HeatThreshold::Process(const cv::Mat& input, cv::Mat& output, const std::string& filename) const
     {
-        cv::Mat output;
-        cv::threshold(input, output, m_ThresholdParam, 255.0, cv::ThresholdTypes::THRESH_TOZERO);
+        cv::threshold(input, output, m_Threshold, m_MaxValue, cv::ThresholdTypes::THRESH_BINARY);
 
         if (!filename.empty()) {
             SaveResult(output, filename);

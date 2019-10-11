@@ -19,6 +19,7 @@ include_directories(include)
 list(APPEND PIPELINE_SOURCES
         src/pipeline/PipelineElement.cpp
         src/pipeline/HeatThreshold.cpp
+        src/pipeline/Pipeline.cpp
 )
 
 list(APPEND IO_SOURCES
