@@ -8,6 +8,8 @@
 
 #include "pipeline/PipelineElement.hpp"
 
+#include <memory>
+
 namespace Pipeline
 {
     class HeatThreshold : public PipelineElement
@@ -15,7 +17,7 @@ namespace Pipeline
     public:
         HeatThreshold(const std::string &name, int threshold, int maxValue);
 
-        void Process(const cv::Mat& input, cv::Mat& output, const std::string& filename = "") const;
+        void Process(const cv::Mat& input, cv::Mat& output, std::shared_ptr<void>& result, const std::string& filename = "") const;
 
     private:
         int m_Threshold;

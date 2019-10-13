@@ -5,12 +5,14 @@
 
 
 #include <memory>
+#include <utility>
+#include <iostream>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <utility>
 
 #include "pipeline/Pipeline.hpp"
 #include "pipeline/HeatThreshold.hpp"
+#include "pipeline/FumaroleContour.hpp"
 #include "config/ConfigParser.hpp"
 
 namespace Pipeline
@@ -22,6 +24,9 @@ namespace Pipeline
         int t1 = Config::ConfigParser::GetInstance().GetValue<int>("config.pipeline.heat_threshold.threshold_intensity_very_hot");
         int t2 = Config::ConfigParser::GetInstance().GetValue<int>("config.pipeline.heat_threshold.threshold_intensity_hot");
 
+        // type as string
+        std::string typeName;
+
         // create the starting element (threshold) based on the fumarole type
         switch (m_FumaroleType)
         {
@@ -29,6 +34,7 @@ namespace Pipeline
             case Model::FumaroleType::FUMAROLE_VERY_HOT: {
                 auto h1 = std::make_unique<HeatThreshold>("very_hot_threshold", t1, 255);
                 m_Elements.emplace_back(std::move(h1));
+                typeName = "very_hot";
                 break;
             }
 
@@ -36,9 +42,14 @@ namespace Pipeline
             case Model::FumaroleType::FUMAROLE_HOT: {
                 auto h2 = std::make_unique<HeatThreshold>("hot_threshold", t2, t1);
                 m_Elements.emplace_back(std::move(h2));
+                typeName = "hot";
                 break;
             }
         }
+
+        // contour detection
+        auto c1 =  std::make_unique<FumaroleContour>("contour_detection_" + typeName);
+        m_Elements.emplace_back(std::move(c1));
     }
 
     // Destructor
@@ -48,10 +59,13 @@ namespace Pipeline
     cv::Mat input;
     cv::Mat output;
 
+    std::shared_ptr<void> result;
+
     bool Pipeline::Run() const
     {
         for (const auto& file : m_Files)
         {
+            //std::cout << "\nProcessing " << file.first;
             // read in image
             input = std::move(cv::imread(file.second, cv::IMREAD_GRAYSCALE));
             if (!input.data) {
@@ -61,7 +75,7 @@ namespace Pipeline
             for (const auto & m_Element : m_Elements)
             {
                 // pass to each element in the pipeline
-                m_Element->Process(input, output, file.first);
+                m_Element->Process(input, output, result, file.first);
                 input = output;
             }
         }
