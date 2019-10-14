@@ -36,10 +36,10 @@ namespace IO
     }
 
     // Get the thermal image for the given file id
-    bool GetThermalImage(const std::string& fileID, cv::Mat& image)
+    bool GetThermalImage(const std::string& fileID, cv::Mat& image, bool readAsRGB)
     {
-        const std::string filePath { Config::HEATMAPS_GREY_DIR + Config::THERMAL_IMAGE_PREFIX + fileID };
-        image = cv::imread(filePath, cv::IMREAD_GRAYSCALE);
+        const std::string filePath { Config::HEATMAPS_GREY_DIR + Config::THERMAL_IMAGE_PREFIX + fileID + Config::THERMAL_IMAGE_FILE_EXT };
+        image = cv::imread(filePath, readAsRGB ? cv::IMREAD_COLOR : cv::IMREAD_GRAYSCALE);
         return (image.data != nullptr);
     }
 }

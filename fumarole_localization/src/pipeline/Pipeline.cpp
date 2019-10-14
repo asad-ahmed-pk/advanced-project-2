@@ -13,6 +13,7 @@
 #include "pipeline/Pipeline.hpp"
 #include "pipeline/HeatThreshold.hpp"
 #include "pipeline/FumaroleContour.hpp"
+#include "pipeline/FumaroleLocalizer.hpp"
 #include "config/ConfigParser.hpp"
 
 namespace Pipeline
@@ -50,6 +51,10 @@ namespace Pipeline
         // contour detection
         auto c1 =  std::make_unique<FumaroleContour>("contour_detection_" + typeName);
         m_Elements.emplace_back(std::move(c1));
+
+        // final element - localize contours onto original image
+        auto l1 = std::make_unique<FumaroleLocalizer>("localized_" + typeName);
+        m_Elements.emplace_back(std::move(l1));
     }
 
     // Destructor
@@ -80,6 +85,8 @@ namespace Pipeline
                 input = output;
                 previousResult = result;
             }
+
+            previousResult = nullptr;
         }
 
         return true;

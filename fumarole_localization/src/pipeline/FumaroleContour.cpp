@@ -59,10 +59,12 @@ namespace Pipeline
                 }
 
                 // set the result of the processing (contours)
-                //auto r = std::make_shared<cv::OutputArrayOfArrays>(std::move(contourPoints));
                 result = contourPoints;
+                return;
             }
         }
+
+        result = nullptr;
     }
 
     // Remove the contours that are detected as noise (small area)
