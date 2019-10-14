@@ -18,7 +18,7 @@ namespace Pipeline
     }
 
     // Process
-    void HeatThreshold::Process(const cv::Mat& input, cv::Mat& output, std::shared_ptr<void>& result, const std::string& filename) const
+    void HeatThreshold::Process(const cv::Mat& input, cv::Mat& output, const std::shared_ptr<void>& previousElementResult, std::shared_ptr<void>& result, const std::string& filename) const
     {
         //cv::threshold(input, output, m_Threshold, m_MaxValue, cv::ThresholdTypes::THRESH_BINARY);
         cv::inRange(input, m_Threshold, m_MaxValue, output);

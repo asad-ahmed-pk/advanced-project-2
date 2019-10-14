@@ -60,6 +60,7 @@ namespace Pipeline
     cv::Mat output;
 
     std::shared_ptr<void> result;
+    std::shared_ptr<void> previousResult;
 
     bool Pipeline::Run() const
     {
@@ -75,8 +76,9 @@ namespace Pipeline
             for (const auto & m_Element : m_Elements)
             {
                 // pass to each element in the pipeline
-                m_Element->Process(input, output, result, file.first);
+                m_Element->Process(input, output, previousResult, result, file.first);
                 input = output;
+                previousResult = result;
             }
         }
 

@@ -3,7 +3,7 @@
 # Project
 cmake_minimum_required(VERSION 3.10)
 project(fumarole_localization)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 # OpenCV
 find_package(OpenCV 4.1 REQUIRED)
@@ -20,6 +20,7 @@ list(APPEND PIPELINE_SOURCES
         src/pipeline/PipelineElement.cpp
         src/pipeline/HeatThreshold.cpp
         src/pipeline/FumaroleContour.cpp
+        src/pipeline/FumaroleLocalizer.cpp
         src/pipeline/Pipeline.cpp
 )
 

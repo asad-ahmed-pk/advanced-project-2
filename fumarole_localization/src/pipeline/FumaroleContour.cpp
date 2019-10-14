@@ -7,6 +7,7 @@
 #include "pipeline/FumaroleContour.hpp"
 #include "config/ConfigParser.hpp"
 
+#include <memory>
 #include <vector>
 #include <iostream>
 #include <opencv2/core/core.hpp>
@@ -25,35 +26,41 @@ namespace Pipeline
     FumaroleContour::~FumaroleContour() {}
 
     // Processing
-    void FumaroleContour::Process(const cv::Mat &input, cv::Mat &output, std::shared_ptr<void>& result, const std::string &filename) const
+    void FumaroleContour::Process(const cv::Mat &input, cv::Mat &output, const std::shared_ptr<void>& previousElementResult, std::shared_ptr<void>& result, const std::string &filename) const
     {
-        std::vector<std::vector<cv::Point>> contourPoints;
-        std::vector<cv::Vec4i> hierarchy;
+       auto contourPoints = std::make_shared<std::vector<std::vector<cv::Point>>>();
+       std::vector<cv::Vec4i> hierarchy;
 
         //input.copyTo(output);
         //cv::cvtColor(input, output, cv::COLOR_GRAY2BGR);
         output = cv::Mat::zeros(input.rows, input.cols, CV_8UC3);
 
-        cv::findContours(input, contourPoints, hierarchy, cv::RetrievalModes::RETR_EXTERNAL, cv::ContourApproximationModes::CHAIN_APPROX_SIMPLE);
+        cv::findContours(input, *contourPoints, hierarchy, cv::RetrievalModes::RETR_EXTERNAL, cv::ContourApproximationModes::CHAIN_APPROX_SIMPLE);
 
         // filter out noise (contours with very small areas)
-        if (!contourPoints.empty())
+        if (!contourPoints->empty())
         {
-            FilterContourNoise(contourPoints);
+            FilterContourNoise(*contourPoints);
 
-            if (!contourPoints.empty())
+            if (!contourPoints->empty())
             {
-                for (const auto &c : contourPoints) {
+                /*
+                for (const auto &c : *contourPoints) {
                     std::cout << "Contour Area: " << cv::contourArea(c) << std::endl;
                 }
+                */
 
                 // draw contours
-                cv::drawContours(output, contourPoints, -1, cv::Scalar(0, 0, 255), 1, cv::LINE_8);
+                cv::drawContours(output, *contourPoints, -1, cv::Scalar(0, 0, 255), 1, cv::LINE_8);
 
                 // save this result to disk if contours present
                 if (!filename.empty()) {
                     SaveResult(output, filename);
                 }
+
+                // set the result of the processing (contours)
+                //auto r = std::make_shared<cv::OutputArrayOfArrays>(std::move(contourPoints));
+                result = contourPoints;
             }
         }
     }

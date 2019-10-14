@@ -9,11 +9,12 @@
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/path.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <utility>
 
 namespace Pipeline
 {
     // Constructor
-    PipelineElement::PipelineElement(const std::string &name) : m_Name(name)
+    PipelineElement::PipelineElement(std::string name) : m_Name(std::move(name))
     {
 
     }

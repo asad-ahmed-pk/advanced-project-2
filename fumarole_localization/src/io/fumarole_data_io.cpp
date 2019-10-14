@@ -4,7 +4,8 @@
 //
 
 #include <iostream>
-
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include <boost/filesystem.hpp>
 
 #include "config/config.hpp"
@@ -15,13 +16,30 @@ namespace IO
     // Read all greyscale data
     void GetGreyscaleHeatMaps(std::map<std::string, std::string>& files)
     {
+        std::string filename;
         boost::filesystem::path path;
         boost::filesystem::directory_iterator end;
 
         for (boost::filesystem::directory_iterator itr(Config::HEATMAPS_GREY_DIR); itr != end; itr++)
         {
             path = std::move(boost::filesystem::path(*itr));
-            files[path.stem().string()] = path.string();
+
+            // remove the Camthermal prefix and extract the filename
+            filename = path.stem().string();
+            size_t index = filename.find(Config::THERMAL_IMAGE_PREFIX);
+            if (index != std::string::npos) {
+                filename = filename.substr(Config::THERMAL_IMAGE_PREFIX.size(), filename.size() - Config::THERMAL_IMAGE_PREFIX.size());
+            }
+
+            files[filename] = path.string();
         }
+    }
+
+    // Get the thermal image for the given file id
+    bool GetThermalImage(const std::string& fileID, cv::Mat& image)
+    {
+        const std::string filePath { Config::HEATMAPS_GREY_DIR + Config::THERMAL_IMAGE_PREFIX + fileID };
+        image = cv::imread(filePath, cv::IMREAD_GRAYSCALE);
+        return (image.data != nullptr);
     }
 }
