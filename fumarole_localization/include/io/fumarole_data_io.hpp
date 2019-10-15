@@ -24,6 +24,12 @@ namespace IO
     /// \param readAsRGB If true, image will be read as RGB instead of grey scale
     /// \return Returns true if loaded successfully
     bool GetThermalImage(const std::string& fileID, cv::Mat& image, bool readAsRGB);
+
+    /// Get the full res (left cam) image for the given fileID
+    /// \param fileID The ID of the file
+    /// \param image A reference that will be set to the loaded image on success
+    /// \return Returns true on success
+    bool GetFullResCamImage(const std::string fileID, cv::Mat& image);
 }
 
 #endif //FUMAROLE_LOCALIZATION_FUMAROLE_DATA_IO_HPP

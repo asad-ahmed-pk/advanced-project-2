@@ -71,7 +71,8 @@ namespace Pipeline
     {
         for (const auto& file : m_Files)
         {
-            //std::cout << "\nProcessing " << file.first;
+            std::cout << "\nProcessing " << file.first;
+
             // read in image
             input = std::move(cv::imread(file.second, cv::IMREAD_GRAYSCALE));
             if (!input.data) {

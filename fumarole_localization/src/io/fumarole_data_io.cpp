@@ -3,7 +3,6 @@
 // Contains functions for loading fumarole data from disk
 //
 
-#include <iostream>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <boost/filesystem.hpp>
@@ -40,6 +39,14 @@ namespace IO
     {
         const std::string filePath { Config::HEATMAPS_GREY_DIR + Config::THERMAL_IMAGE_PREFIX + fileID + Config::THERMAL_IMAGE_FILE_EXT };
         image = cv::imread(filePath, readAsRGB ? cv::IMREAD_COLOR : cv::IMREAD_GRAYSCALE);
+        return (image.data != nullptr);
+    }
+
+    // Get cam image
+    bool GetFullResCamImage(const std::string fileID, cv::Mat& image)
+    {
+        const std::string filePath { Config::FULL_RES_IMAGE_LEFT_CAM_DIR + Config::FULL_RES_IMAGE_PREFIX + "_" + fileID + Config::FULL_RES_IMAGE_FILE_EXT };
+        image = cv::imread(filePath, cv::IMREAD_COLOR);
         return (image.data != nullptr);
     }
 }
