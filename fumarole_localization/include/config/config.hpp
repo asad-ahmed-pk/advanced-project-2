@@ -15,8 +15,8 @@ namespace Config
     const std::string IMAGE_OUTPUT_EXT { ".png" };
 
     const std::string THERMAL_IMAGE_PREFIX { "CamThermal_" };
-    const std::string THERMAL_IMAGE_FILE_EXT { ".bmp" };
-    const std::string HEATMAPS_GREY_DIR { "../data/CamThermal_vis_grey/"};
+    const std::string THERMAL_IMAGE_FILE_EXT { ".exr" };
+    const std::string HEATMAPS_GREY_DIR { "../data/CamThermal/"};
 
     const std::string FULL_RES_IMAGE_PREFIX { "CamLeft" };
     const std::string FULL_RES_IMAGE_FILE_EXT { ".tiff" };

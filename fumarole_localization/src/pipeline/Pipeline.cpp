@@ -24,6 +24,7 @@ namespace Pipeline
         // threshold values
         int t1 = Config::ConfigParser::GetInstance().GetValue<int>("config.pipeline.heat_threshold.threshold_intensity_very_hot");
         int t2 = Config::ConfigParser::GetInstance().GetValue<int>("config.pipeline.heat_threshold.threshold_intensity_hot");
+        int t2Max = Config::ConfigParser::GetInstance().GetValue<int>("config.pipeline.heat_threshold.threshold_intensity_hot_upper");
 
         // type as string
         std::string typeName;
@@ -41,7 +42,7 @@ namespace Pipeline
 
             // hot
             case Model::FumaroleType::FUMAROLE_HOT: {
-                auto h2 = std::make_unique<HeatThreshold>("hot_threshold", t2, t1);
+                auto h2 = std::make_unique<HeatThreshold>("hot_threshold", t2, t2Max);
                 m_Elements.emplace_back(std::move(h2));
                 typeName = "hot";
                 break;

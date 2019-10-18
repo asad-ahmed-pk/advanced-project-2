@@ -28,11 +28,9 @@ namespace Pipeline
     // Processing
     void FumaroleContour::Process(const cv::Mat &input, cv::Mat &output, const std::shared_ptr<void>& previousElementResult, std::shared_ptr<void>& result, const std::string &filename) const
     {
-       auto contourPoints = std::make_shared<std::vector<std::vector<cv::Point>>>();
-       std::vector<cv::Vec4i> hierarchy;
+        auto contourPoints = std::make_shared<std::vector<std::vector<cv::Point>>>();
+        std::vector<cv::Vec4i> hierarchy;
 
-        //input.copyTo(output);
-        //cv::cvtColor(input, output, cv::COLOR_GRAY2BGR);
         output = cv::Mat::zeros(input.rows, input.cols, CV_8UC3);
 
         cv::findContours(input, *contourPoints, hierarchy, cv::RetrievalModes::RETR_EXTERNAL, cv::ContourApproximationModes::CHAIN_APPROX_SIMPLE);
