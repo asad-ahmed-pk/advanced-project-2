@@ -1,0 +1,26 @@
+<annotation>
+	<folder>CamThermal_vis_color</folder>
+	<filename>CamThermal_000518814000.bmp</filename>
+	<path>/home/asad/data3/asahmed/advanced_project_2/project/fumarole_localization/data/CamThermal_vis_color/CamThermal_000518814000.bmp</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>382</width>
+		<height>288</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>fumarole</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>155</xmin>
+			<ymin>126</ymin>
+			<xmax>197</xmax>
+			<ymax>171</ymax>
+		</bndbox>
+	</object>
+</annotation>
