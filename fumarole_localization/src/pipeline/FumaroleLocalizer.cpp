@@ -37,6 +37,9 @@ namespace Pipeline
                 cv::drawContours(image, *contours, -1, cv::Scalar(0, 0, 255), 1, cv::LINE_8);
                 SaveResult(image, filename);
             }
+
+            // result is just the same contours that were set as input
+            result = previousElementResult;
         }
     }
 }

@@ -68,7 +68,7 @@ namespace Pipeline
     std::shared_ptr<void> result;
     std::shared_ptr<void> previousResult;
 
-    bool Pipeline::Run() const
+    bool Pipeline::Run()
     {
         for (const auto& file : m_Files)
         {
@@ -88,9 +88,18 @@ namespace Pipeline
                 previousResult = result;
             }
 
+            // last element in the pipeline is the localization - save its input
+            auto contours = std::static_pointer_cast<std::vector<std::vector<cv::Point>>>(result);
+            m_Localizations[file.first] = std::move(*contours);
+
             previousResult = nullptr;
         }
 
         return true;
+    }
+
+    // Get final localizations
+    PipelineLocalizations Pipeline::GetLocalizations() const {
+        return m_Localizations;
     }
 }

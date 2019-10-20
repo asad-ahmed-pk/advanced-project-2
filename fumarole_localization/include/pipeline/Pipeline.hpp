@@ -16,6 +16,9 @@
 
 namespace Pipeline
 {
+    // Typedef for the final localization result
+    typedef std::map<std::string, std::vector<std::vector<cv::Point>>> PipelineLocalizations;
+
     class Pipeline
     {
     public:
@@ -29,12 +32,17 @@ namespace Pipeline
         ~Pipeline();
 
         /// Run the pipeline with the configured elements
-        bool Run() const;
+        bool Run();
+
+        /// Get the final, processed localizations for each image that was run through this pipeline
+        /// \return A copy of the processed localizations. The key in the map is the fileID, and the value is a list of contours.
+        PipelineLocalizations GetLocalizations() const;
 
     private:
         std::map<std::string, std::string> m_Files;
         std::vector<std::unique_ptr<PipelineElement>> m_Elements;
         Model::FumaroleType m_FumaroleType;
+        PipelineLocalizations m_Localizations;
     };
 }
 

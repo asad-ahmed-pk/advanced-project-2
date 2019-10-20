@@ -56,13 +56,12 @@ namespace Pipeline
                     SaveResult(output, filename);
                 }
 
-                // set the result of the processing (contours)
-                result = contourPoints;
-                return;
+
             }
         }
 
-        result = nullptr;
+        // set the result of the processing (contours)
+        result = contourPoints;
     }
 
     // Remove the contours that are detected as noise (small area)
