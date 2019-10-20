@@ -18,7 +18,7 @@
 
 namespace Pipeline
 {
-    // Default constructor
+    // Constructor that runs on multiple images
     Pipeline::Pipeline(const std::map<std::string, std::string>& files, Model::FumaroleType type) : m_Files(files), m_FumaroleType(type)
     {
         // threshold values

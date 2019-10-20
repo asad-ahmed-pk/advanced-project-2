@@ -3,8 +3,8 @@
 // Main image processing pipeline to run on the images for detection
 //
 
-#ifndef FUMAROLE_LOCALIZATION_PIPLINE_HPP
-#define FUMAROLE_LOCALIZATION_PIPLINE_HPP
+#ifndef FUMAROLE_LOCALIZATION_PIPELINE_HPP
+#define FUMAROLE_LOCALIZATION_PIPELINE_HPP
 
 #include <map>
 #include <string>
@@ -38,4 +38,4 @@ namespace Pipeline
     };
 }
 
-#endif //FUMAROLE_LOCALIZATION_PIPLINE_HPP
+#endif //FUMAROLE_LOCALIZATION_PIPELINE_HPP
