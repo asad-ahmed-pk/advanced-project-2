@@ -26,8 +26,15 @@ list(APPEND PIPELINE_SOURCES
 
 list(APPEND IO_SOURCES
         src/io/fumarole_data_io.cpp
+        src/io/DatasetLoader.cpp
 )
 
 # Executables
+
+# Main program
 add_executable(${PROJECT_NAME} src/main.cpp ${PIPELINE_SOURCES} ${IO_SOURCES} src/config/ConfigParser.cpp)
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} ${Boost_LIBRARIES})
+
+# Testing program
+add_executable(detector_test src/test.cpp ${PIPELINE_SOURCES} ${IO_SOURCES} src/config/ConfigParser.cpp)
+target_link_libraries(detector_test ${OpenCV_LIBS} ${Boost_LIBRARIES})

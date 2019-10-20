@@ -21,6 +21,9 @@ namespace Config
     const std::string FULL_RES_IMAGE_PREFIX { "CamLeft" };
     const std::string FULL_RES_IMAGE_FILE_EXT { ".tiff" };
     const std::string FULL_RES_IMAGE_LEFT_CAM_DIR { "../data/CamLeft/" };
+
+    const std::string TEST_ID_LIST_PATH { "../resources/fumarole_test_list.txt" };
+    const std::string TEST_GROUND_TRUTH_BOUNDING_BOX_XML_DIR { "../resources/" };
 }
 
 #endif //FUMAROLE_LOCALIZATION_CONFIG_HPP
