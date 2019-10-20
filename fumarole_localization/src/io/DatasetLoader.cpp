@@ -58,8 +58,10 @@ namespace IO
                 boost::property_tree::read_xml(filePath, ptree);
 
                 // get all the fumarole bounding boxes for this file
-                for (boost::property_tree::ptree::value_type &child : ptree.get_child(parentNode)) {
-                    if (child.first == "object") {
+                for (boost::property_tree::ptree::value_type &child : ptree.get_child(parentNode))
+                {
+                    if (child.first == "object")
+                    {
                         x = child.second.get<int>("bndbox.xmin");
                         y = child.second.get<int>("bndbox.ymin");
                         width = child.second.get<int>("bndbox.xmax") - x;

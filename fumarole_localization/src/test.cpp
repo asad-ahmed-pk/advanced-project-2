@@ -18,7 +18,7 @@ int main(int argc, char** argv)
 
     for (auto iter = groundTruth.begin(); iter != groundTruth.end(); iter++)
     {
-        std::cout << iter->first << std::endl;
+        std::cout << "\n\n" << iter->first << std::endl;
         for (auto rect : iter->second) {
             std::cout << "\nx: " << rect.x << " y: " << rect.y << " width: " << rect.width << " height: " << rect.height << std::endl;
         }
