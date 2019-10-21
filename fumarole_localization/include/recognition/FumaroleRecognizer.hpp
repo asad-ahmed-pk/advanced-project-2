@@ -40,6 +40,10 @@ namespace Recognition
         /// \return Returns true on success
         bool RecognizeFumaroles(const std::map<std::string, std::string>& files, std::map<std::string, std::vector<FumaroleDetectionResult>>& results) const;
 
+        /// Save the result detection map [maps image id -> list of fumaroles] as images with the bounding boxes drawn on top
+        /// \param resultMap A map with <file_id: <list of fumarole detection results>>
+        void SaveResults(const DetectionMap& resultMap) const;
+
     private:
         std::map<std::string, std::vector<FumaroleDetectionResult>> ConvertLocalizations(const Pipeline::PipelineLocalizations& localizations) const;
         DetectionMap MergeResults(const DetectionMap& m1, const DetectionMap& m2) const;

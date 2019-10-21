@@ -5,11 +5,15 @@
 
 #include "recognition/FumaroleRecognizer.hpp"
 #include "model/FumaroleType.hpp"
+#include "config/config.hpp"
+#include "io/fumarole_data_io.hpp"
 
 #include <map>
 #include <string>
 #include <algorithm>
+#include <filesystem>
 #include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
 namespace Recognition
@@ -144,5 +148,35 @@ namespace Recognition
         }
 
         return std::move(mergedMap);
+    }
+
+    // Save results as images
+    void FumaroleRecognizer::SaveResults(const Recognition::DetectionMap &resultMap) const
+    {
+        // create output dir if needed
+        if (!std::filesystem::exists(Config::FINAL_RESULTS_OUTPUT_DIR)) {
+            std::filesystem::create_directory(Config::FINAL_RESULTS_OUTPUT_DIR);
+        }
+
+        // save all images
+        cv::Mat image;
+        std::string path;
+
+        for (const auto& result : resultMap)
+        {
+            // load the original grayscale image
+            IO::GetThermalImage(result.first, image, true);
+
+            // draw all detected bounding boxes on this image
+            for (const FumaroleDetectionResult& r : result.second) {
+                cv::rectangle(image, r.BoundingBox, r.Type == Model::FumaroleType::FUMAROLE_VERY_HOT ? cv::Scalar(0, 0, 255) : cv::Scalar(0, 166, 255), 2);
+            }
+
+            path = Config::FINAL_RESULTS_OUTPUT_DIR;
+            path += result.first;
+            path += Config::IMAGE_OUTPUT_EXT;
+
+            cv::imwrite(path, image);
+        }
     }
 }

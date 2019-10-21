@@ -24,6 +24,8 @@ namespace Config
 
     const std::string TEST_ID_LIST_PATH { "../resources/fumarole_test_list.txt" };
     const std::string TEST_GROUND_TRUTH_BOUNDING_BOX_XML_DIR { "../resources/" };
+
+    const std::string FINAL_RESULTS_OUTPUT_DIR { "results/" };
 }
 
 #endif //FUMAROLE_LOCALIZATION_CONFIG_HPP
