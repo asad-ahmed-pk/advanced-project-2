@@ -7,8 +7,9 @@
 #include "model/FumaroleType.hpp"
 
 #include <map>
+#include <string>
+#include <algorithm>
 #include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
 namespace Recognition
@@ -51,16 +52,24 @@ namespace Recognition
         Pipeline::Pipeline p2(files, Model::FumaroleType::FUMAROLE_HOT);
 
         // run pipelines
-        p1.Run();
-        p2.Run();
+        bool p1Success = p1.Run();
+        bool p2Success = p2.Run();
 
-        // convert localizations of pipelines into results
-        std::map<std::string, std::vector<FumaroleDetectionResult>> results1 = std::move(ConvertLocalizations(p1.GetLocalizations()));
-        std::map<std::string, std::vector<FumaroleDetectionResult>> results2 = std::move(ConvertLocalizations(p2.GetLocalizations()));
+        if (p1Success && p2Success)
+        {
+            // convert localizations of pipelines into results
+            std::map<std::string, std::vector<FumaroleDetectionResult>> results1 = std::move(
+                    ConvertLocalizations(p1.GetLocalizations()));
+            std::map<std::string, std::vector<FumaroleDetectionResult>> results2 = std::move(
+                    ConvertLocalizations(p2.GetLocalizations()));
 
-        // TODO: merge results of both heat pipelines
-        return true;
+            // merge results of both heat pipelines
+            DetectionMap mergedMap = MergeResults(results1, results2);
 
+            return true;
+        }
+
+        return false;
     }
 
     // Convert localizations from pipeline into detection results
@@ -93,8 +102,47 @@ namespace Recognition
     DetectionMap FumaroleRecognizer::MergeResults(const Recognition::DetectionMap &m1, const Recognition::DetectionMap &m2) const
     {
         DetectionMap mergedMap;
+        std::vector<FumaroleDetectionResult> m2Detections;
 
-        // TODO: return merged map
+        for (std::map<std::string, std::vector<FumaroleDetectionResult>>::const_iterator iter = m1.begin(); iter != m1.end(); iter++)
+        {
+            // check if the lower heat map also has a detection for this file
+            auto iter2 = m2.find(iter->first);
+            if (iter2 != m2.end())
+            {
+                // there is - if there is a bounding box that encloses one in the hot, remove it
+                m2Detections = iter2->second;
+                for (const FumaroleDetectionResult& r1 : iter->second)
+                {
+                    for (auto m2DetectionsIter = m2Detections.begin(); m2DetectionsIter != m2Detections.end(); m2DetectionsIter++)
+                    {
+                        if ((r1.BoundingBox & m2DetectionsIter->BoundingBox) == r1.BoundingBox) {
+                            m2DetectionsIter = m2Detections.erase(m2DetectionsIter);
+                            continue;
+                        }
+                    }
+
+                    mergedMap[iter->first].push_back(r1);
+                }
+
+                // add all m2 detections that were not removed (these are stand-alone and do not overlap the hotter fumaroles)
+                mergedMap[iter->first].insert(mergedMap[iter->first].end(),  m2Detections.begin(), m2Detections.end());
+            }
+            else
+            {
+                // detections are separate, just add to merged map
+                mergedMap[iter->first] = iter->second;
+            }
+        }
+
+        // add remaining detections in m2 to the merged map
+        for (std::map<std::string, std::vector<FumaroleDetectionResult>>::const_iterator iter = m2.begin(); iter != m2.end(); iter++)
+        {
+            if (mergedMap.find(iter->first) != mergedMap.end()) {
+                mergedMap[iter->first] = iter->second;
+            }
+        }
+
         return std::move(mergedMap);
     }
 }
