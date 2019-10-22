@@ -8,7 +8,6 @@
 #include "config/config.hpp"
 #include "io/fumarole_data_io.hpp"
 
-#include <iostream>
 #include <map>
 #include <string>
 #include <algorithm>
@@ -167,9 +166,7 @@ namespace Recognition
 
             // draw all detected bounding boxes on this image
             for (const FumaroleDetectionResult& r : result.second) {
-
-                if (r.Type == Model::FumaroleType::FUMAROLE_VERY_HOT) std::cout << "VHOT" << std::endl;
-                cv::rectangle(image, r.BoundingBox, r.Type == Model::FumaroleType::FUMAROLE_VERY_HOT ? cv::Scalar(0, 0, 255) : cv::Scalar(0, 166, 255), 2);
+                cv::rectangle(image, r.BoundingBox, r.Type == Model::FumaroleType::FUMAROLE_VERY_HOT ? cv::Scalar(0, 0, 255) : cv::Scalar(0, 166, 255));
             }
 
             path = Config::FINAL_RESULTS_OUTPUT_DIR;
