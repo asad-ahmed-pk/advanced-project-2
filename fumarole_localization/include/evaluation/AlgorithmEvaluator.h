@@ -9,12 +9,14 @@
 #include "recognition/FumaroleDetectionResult.hpp"
 #include "evaluation/Evaluation.hpp"
 
+#include <eigen3/Eigen/Eigen>
 #include <vector>
 
 namespace Evaluation
 {
     class AlgorithmEvaluator
     {
+    public:
         AlgorithmEvaluator();
 
         ~AlgorithmEvaluator();
@@ -24,6 +26,9 @@ namespace Evaluation
         /// \param truth The ground truth to evaluate against
         /// \return Returns the evaluation result
         FumaroleDetectionEvaluation EvaluateDetections(const std::vector<Recognition::FumaroleDetectionResult>& results, const std::vector<Recognition::FumaroleDetectionResult>& truth) const;
+
+    private:
+        void ConvertResultsToEigenVectors(const std::vector<Recognition::FumaroleDetectionResult>& results, std::vector<Eigen::Vector4f>& vectors) const;
     };
 }
 

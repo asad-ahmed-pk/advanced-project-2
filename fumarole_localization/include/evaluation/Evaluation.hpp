@@ -17,8 +17,7 @@ struct FumaroleDetectionEvaluation
     std::string ImageID;
     int NumberOfActualFumaroles;
     int NumberDetected;
-    double DetectionAccuracy;
-    double LocalizationAccuracy;
+    float Error;
 };
 
 /// Evaluation on multiple images (the entire detection algorithm)
@@ -26,8 +25,7 @@ struct AlgorithmEvaluation
 {
     int TotalNumberOfActualFumaroles;
     int TotalNumberDetected;
-    double DetectionAccuracy;
-    double LocalizationAccuracy;
+    float Error;
 };
 
 #endif //FUMAROLE_LOCALIZATION_EVALUATION_HPP
