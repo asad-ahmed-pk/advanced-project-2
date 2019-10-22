@@ -11,18 +11,21 @@
 #include <map>
 #include <opencv2/core/types.hpp>
 
+#include "recognition/FumaroleDetectionResult.hpp"
+
 namespace IO
 {
     class DatasetLoader
     {
     public:
         /// Loads the file IDs from the given file
-        /// \param fileIDs A reference to a vector that will be populated with the fileIDs
-        static void GetTestFileIDs(std::vector<std::string> &fileIDs);
+        /// \param files A reference to a map that will be filled with <file id: file path>
+        static void GetTestFiles(std::map<std::string, std::string> &files);
 
-        /// Load the detections from the labelled image dir (expected to be labelimg XML files that match the fileIDs
-        /// \param detections Will be loaded with the matching bounding boxes
-        static void LoadTestData(std::map<std::string, std::vector<cv::Rect>>& detections);
+        /// Load testing data to test the algorithm and pipeline
+        /// \param testFiles Will be loaded with <file id: file path>
+        /// \param groundTruth Will be loaded with <file id: the list of ground truth recognition results>
+        static void LoadTestData(std::map<std::string, std::string>& testFiles, std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>>& groundTruth);
     };
 }
 

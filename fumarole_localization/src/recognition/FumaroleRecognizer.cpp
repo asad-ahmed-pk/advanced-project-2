@@ -11,7 +11,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <filesystem>
+#include <boost/filesystem.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -154,8 +154,8 @@ namespace Recognition
     void FumaroleRecognizer::SaveResults(const Recognition::DetectionMap &resultMap) const
     {
         // create output dir if needed
-        if (!std::filesystem::exists(Config::FINAL_RESULTS_OUTPUT_DIR)) {
-            std::filesystem::create_directory(Config::FINAL_RESULTS_OUTPUT_DIR);
+        if (!boost::filesystem::exists(Config::FINAL_RESULTS_OUTPUT_DIR)) {
+            boost::filesystem::create_directory(Config::FINAL_RESULTS_OUTPUT_DIR);
         }
 
         // save all images
