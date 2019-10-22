@@ -1,0 +1,12 @@
+<config>
+    <pipeline>
+        <heat_threshold>
+            <threshold_intensity_very_hot>200</threshold_intensity_very_hot>
+            <threshold_intensity_hot>70</threshold_intensity_hot>
+            <threshold_intensity_hot_upper>180</threshold_intensity_hot_upper>
+        </heat_threshold>
+        <contour>
+            <min_area>80.0</min_area>
+        </contour>
+    </pipeline>
+</config>
