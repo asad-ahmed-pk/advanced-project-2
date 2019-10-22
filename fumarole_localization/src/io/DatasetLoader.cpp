@@ -17,28 +17,34 @@
 namespace IO
 {
     // Load test file IDs
-    void DatasetLoader::GetTestFileIDs(std::vector<std::string> &fileIDs)
+    void DatasetLoader::GetTestFiles(std::map<std::string, std::string>& files)
     {
         std::ifstream is;
         is.open(Config::TEST_ID_LIST_PATH, std::ios::in);
 
         std::string fileID;
+        std::string filePath;
+
         if (is.is_open())
         {
             while (getline(is, fileID))
             {
                 boost::trim_right(fileID);
-                fileIDs.emplace_back(fileID);
+
+                filePath = Config::HEATMAPS_GREY_DIR;
+                filePath += fileID;
+                filePath += Config::THERMAL_IMAGE_FILE_EXT;
+
+                files[fileID] = filePath;
             }
         }
     }
 
-    // Bounding box load (testing data)
-    void DatasetLoader::LoadTestData(std::map<std::string, std::vector<cv::Rect>>& detections)
+    // Load test data and ground truth
+    void DatasetLoader::LoadTestData(std::map<std::string, std::string>& testFiles, std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>>& groundTruth)
     {
-        // get the testing file IDs
-        std::vector<std::string> fileIDs;
-        GetTestFileIDs(fileIDs);
+        // get the test files
+        GetTestFiles(testFiles);
 
         // load the bounding box ground truth data
         boost::property_tree::ptree ptree;
@@ -48,10 +54,9 @@ namespace IO
         int width = 0, height = 0;
         std::string filePath;
 
-        for (const std::string& fileID : fileIDs)
+        for (std::map<std::string, std::string>::const_iterator iter = testFiles.begin(); iter != testFiles.end(); iter++)
         {
-            filePath = Config::TEST_GROUND_TRUTH_BOUNDING_BOX_XML_DIR + fileID + ".xml";
-            std::vector<cv::Rect> boundingBoxes;
+            filePath = Config::TEST_GROUND_TRUTH_BOUNDING_BOX_XML_DIR + iter->first + ".xml";
 
             if (boost::filesystem::exists(filePath))
             {
@@ -67,12 +72,14 @@ namespace IO
                         width = child.second.get<int>("bndbox.xmax") - x;
                         height = child.second.get<int>("bndbox.ymax") - y;
 
-                        boundingBoxes.push_back(std::move(cv::Rect(x, y, width, height)));
+                        Recognition::FumaroleDetectionResult r;
+                        r.BoundingBox = std::move(cv::Rect(x, y, width, height));
+                        r.ImageID = iter->first;
+
+                        groundTruth[iter->first].emplace_back(r);
                     }
                 }
             }
-
-            detections[fileID] = std::move(boundingBoxes);
         }
     }
 }

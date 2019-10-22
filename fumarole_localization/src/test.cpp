@@ -13,21 +13,18 @@
 
 int main(int argc, char** argv)
 {
-    // Load test bounding boxes (ground truth)
-    std::map<std::string, std::vector<cv::Rect>> groundTruth;
-    IO::DatasetLoader::LoadTestData(groundTruth);
+    // Load test files and ground truth
+    std::map<std::string, std::string> testFiles;
+    std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>> groundTruth;
+    IO::DatasetLoader::LoadTestData(testFiles, groundTruth);
 
-    for (auto iter = groundTruth.begin(); iter != groundTruth.end(); iter++)
+    for (auto& iter : groundTruth)
     {
-        std::cout << "\n\n" << iter->first << std::endl;
-        for (auto rect : iter->second) {
-            std::cout << "\nx: " << rect.x << " y: " << rect.y << " width: " << rect.width << " height: " << rect.height << std::endl;
+        std::cout << "\n\n" << iter.first << std::endl;
+        for (const auto& result : iter.second) {
+            std::cout << "\nx: " << result.BoundingBox.x << " y: " << result.BoundingBox.y << " width: " << result.BoundingBox.width << " height: " << result.BoundingBox.height << std::endl;
         }
     }
-
-    // load test data
-    std::vector<std::string> testFileIDs;
-    IO::DatasetLoader::GetTestFileIDs(testFileIDs);
 
     return 0;
 }
