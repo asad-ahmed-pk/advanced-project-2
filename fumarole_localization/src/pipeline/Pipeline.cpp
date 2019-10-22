@@ -77,6 +77,7 @@ namespace Pipeline
             // read in image
             input = std::move(cv::imread(file.second, cv::IMREAD_GRAYSCALE));
             if (!input.data) {
+                std::cerr << "\nFailed to read file: " << file.second << std::endl;
                 return false;
             }
 

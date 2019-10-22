@@ -45,7 +45,7 @@ namespace Recognition
         void SaveResults(const DetectionMap& resultMap) const;
 
     private:
-        std::map<std::string, std::vector<FumaroleDetectionResult>> ConvertLocalizations(const Pipeline::PipelineLocalizations& localizations) const;
+        std::map<std::string, std::vector<FumaroleDetectionResult>> ConvertLocalizations(const Pipeline::PipelineLocalizations& localizations, Model::FumaroleType type) const;
         DetectionMap MergeResults(const DetectionMap& m1, const DetectionMap& m2) const;
     };
 }
