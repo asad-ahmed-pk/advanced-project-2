@@ -2,14 +2,12 @@
 // Test program for testing the pipeline / detector against ground truth dataset
 
 #include "io/DatasetLoader.hpp"
-#include "io/fumarole_data_io.hpp"
+#include "recognition/FumaroleRecognizer.hpp"
 
 #include <map>
 #include <vector>
 #include <string>
 #include <iostream>
-#include <opencv2/core/core.hpp>
-#include <opencv2/core/types.hpp>
 
 int main(int argc, char** argv)
 {
@@ -18,6 +16,7 @@ int main(int argc, char** argv)
     std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>> groundTruth;
     IO::DatasetLoader::LoadTestData(testFiles, groundTruth);
 
+    /*
     for (auto& iter : groundTruth)
     {
         std::cout << "\n\n" << iter.first << std::endl;
@@ -25,6 +24,14 @@ int main(int argc, char** argv)
             std::cout << "\nx: " << result.BoundingBox.x << " y: " << result.BoundingBox.y << " width: " << result.BoundingBox.width << " height: " << result.BoundingBox.height << std::endl;
         }
     }
+    */
+
+    // Run detection
+    std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>> results;
+
+    Recognition::FumaroleRecognizer recognizer;
+    recognizer.RecognizeFumaroles(testFiles, results);
+    recognizer.SaveResults(results);
 
     return 0;
 }
