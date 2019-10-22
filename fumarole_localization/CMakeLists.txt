@@ -12,6 +12,9 @@ find_package(OpenCV 4.1 REQUIRED)
 find_package(Boost 1.60 COMPONENTS filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 
+# Eigen3
+find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+
 # Includes
 include_directories(include)
 
@@ -38,9 +41,9 @@ list(APPEND OTHER_SOURCES
 # Executables
 
 # Main program
-add_executable(${PROJECT_NAME} src/main.cpp ${PIPELINE_SOURCES} ${IO_SOURCES} ${OTHER_SOURCES})
+add_executable(${PROJECT_NAME} src/main.cpp ${PIPELINE_SOURCES} ${IO_SOURCES} ${OTHER_SOURCES} include/evaluation/Evaluation.hpp)
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} ${Boost_LIBRARIES})
 
 # Testing program
 add_executable(detector_test src/test.cpp ${PIPELINE_SOURCES} ${IO_SOURCES} ${OTHER_SOURCES})
-target_link_libraries(detector_test ${OpenCV_LIBS} ${Boost_LIBRARIES})
+target_link_libraries(detector_test ${OpenCV_LIBS} ${Boost_LIBRARIES} Eigen3::Eigen)
