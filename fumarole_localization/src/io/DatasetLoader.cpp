@@ -59,6 +59,9 @@ namespace IO
         {
             filePath = Config::TEST_GROUND_TRUTH_BOUNDING_BOX_XML_DIR + iter->first + ".xml";
 
+            // to init the key (even if no fumaroles exist for this image)
+            groundTruth[iter->first];
+
             if (boost::filesystem::exists(filePath))
             {
                 boost::property_tree::read_xml(filePath, ptree);
