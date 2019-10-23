@@ -55,8 +55,6 @@ namespace Pipeline
                 if (!filename.empty()) {
                     SaveResult(output, filename);
                 }
-
-
             }
         }
 

@@ -4,11 +4,15 @@
 //
 
 #include "evaluation/AlgorithmEvaluator.h"
+#include "io/fumarole_data_io.hpp"
 
-#include <cmath>
 #include <algorithm>
 #include <numeric>
 #include <eigen3/Eigen/Eigen>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <boost/filesystem.hpp>
 
 namespace Evaluation
 {
@@ -70,6 +74,7 @@ namespace Evaluation
 
         std::vector<float> l1Min;        // min l1 distances
         std::vector<float> l1Temp;       // l1 distances
+        cv::Mat image;
 
         for (const auto& x : vectors)
         {
@@ -99,5 +104,13 @@ namespace Evaluation
         for (auto r : results) {
             vectors.emplace_back(Eigen::Vector4f(r.BoundingBox.x, r.BoundingBox.y, r.BoundingBox.x + r.BoundingBox.width, r.BoundingBox.y + r.BoundingBox.height));
         }
+    }
+
+    // Draw rects
+    void AlgorithmEvaluator::DrawDetectionsVsGroundtruth(const std::string &fileID,
+                                                         const std::vector<Recognition::FumaroleDetectionResult> &results,
+                                                         const std::vector<Recognition::FumaroleDetectionResult> &truth) const
+    {
+        // TODO: draw the bounding boxes of detections vs the ground truth bounding boxes
     }
 }

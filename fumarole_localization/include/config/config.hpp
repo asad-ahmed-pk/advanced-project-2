@@ -26,6 +26,7 @@ namespace Config
     const std::string TEST_GROUND_TRUTH_BOUNDING_BOX_XML_DIR { "../resources/" };
 
     const std::string FINAL_RESULTS_OUTPUT_DIR { "results/" };
+    const std::string EVALUATION_IMAGES_OUTOUT_DIR { "evaluation/" };
 }
 
 #endif //FUMAROLE_LOCALIZATION_CONFIG_HPP
