@@ -71,6 +71,12 @@ int main(int argc, char** argv)
         std::cout << std::endl;
     }
 
+    // draw the results vs ground truth for comparison
+    std::cout << "\n\nSaving ground truth vs results" << std::endl;
+    for (const auto& y : groundTruth) {
+        evaluator.DrawDetectionsVsGroundtruth(y.first, results[y.first], y.second);
+    }
+
     std::cout << std::endl;
 
     return 0;
