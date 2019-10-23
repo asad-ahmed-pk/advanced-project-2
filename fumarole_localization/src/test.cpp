@@ -19,16 +19,6 @@ int main(int argc, char** argv)
     std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>> groundTruth;
     IO::DatasetLoader::LoadTestData(testFiles, groundTruth);
 
-    /*
-    for (auto& iter : groundTruth)
-    {
-        std::cout << "\n\n" << iter.first << std::endl;
-        for (const auto& result : iter.second) {
-            std::cout << "\nx: " << result.BoundingBox.x << " y: " << result.BoundingBox.y << " width: " << result.BoundingBox.width << " height: " << result.BoundingBox.height << std::endl;
-        }
-    }
-    */
-
     // run detection
     std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>> results;
 

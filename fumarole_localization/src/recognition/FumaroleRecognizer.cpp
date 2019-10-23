@@ -144,6 +144,15 @@ namespace Recognition
             }
         }
 
+        // add the fumaroles that only have low-heat detections
+        for (std::map<std::string, std::vector<FumaroleDetectionResult>>::const_iterator iter = m2.begin(); iter != m2.end(); iter++)
+        {
+            // not in m1 - add all these detections to merged map
+            if (m1.find(iter->first) == m1.end()) {
+                mergedMap[iter->first] = iter->second;
+            }
+        }
+
         return std::move(mergedMap);
     }
 
@@ -161,7 +170,7 @@ namespace Recognition
 
         for (const auto& result : resultMap)
         {
-            // load the original grayscale image
+            // load the original greyscale image
             IO::GetThermalImage(result.first, image, true);
 
             // draw all detected bounding boxes on this image
