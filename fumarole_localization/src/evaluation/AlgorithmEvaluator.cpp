@@ -44,6 +44,9 @@ namespace Evaluation
                 singleImageEval = EvaluateDetections(iter->second, truthResult.second);
                 singleImageEval.ImageID = truthResult.first;
                 eval.Evaluations.emplace_back(singleImageEval);
+
+                // accumulate total error
+                eval.Error += singleImageEval.Error;
             }
         }
 
