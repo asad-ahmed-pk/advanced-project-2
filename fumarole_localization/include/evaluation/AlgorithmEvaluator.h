@@ -11,6 +11,7 @@
 
 #include <eigen3/Eigen/Eigen>
 #include <vector>
+#include <map>
 
 namespace Evaluation
 {
@@ -20,6 +21,12 @@ namespace Evaluation
         AlgorithmEvaluator();
 
         ~AlgorithmEvaluator();
+
+        /// Evaluate the results from running the detection algorithm on a set of images
+        /// \param results The results of running the algorithm on images where <file id: list of detections>
+        /// \param truth The ground thruth data for each file where <file id: ground truth detection>
+        /// \return An evaluation of the algorithm
+        AlgorithmEvaluation EvaluateDetectionPipeline(const std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>>& results, const std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>>& truth) const;
 
         /// Evaluate the results detected for a single image
         /// \param results The list of detected fumaroles

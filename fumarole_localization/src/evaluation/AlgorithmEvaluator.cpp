@@ -22,6 +22,35 @@ namespace Evaluation
 
     }
 
+    // Evaluate whole pipeline
+    AlgorithmEvaluation AlgorithmEvaluator::EvaluateDetectionPipeline(
+            const std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>> &results,
+            const std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>> &truth) const
+    {
+        AlgorithmEvaluation eval;
+        FumaroleDetectionEvaluation singleImageEval;
+
+        for (const auto& truthResult : truth)
+        {
+            eval.TotalNumberOfActualFumaroles += truthResult.second.size();
+
+            // get corresponding recognition from the pipeline
+            auto iter = results.find(truthResult.first);
+            if (iter != results.end())
+            {
+                eval.TotalNumberDetected += iter->second.size();
+
+                // save the evaluation on this image
+                singleImageEval = EvaluateDetections(iter->second, truthResult.second);
+                singleImageEval.ImageID = truthResult.first;
+                eval.Evaluations.emplace_back(singleImageEval);
+            }
+        }
+
+        return std::move(eval);
+    }
+
+    // Evaluate single image results
     FumaroleDetectionEvaluation AlgorithmEvaluator::EvaluateDetections(const std::vector<Recognition::FumaroleDetectionResult> &results, const std::vector<Recognition::FumaroleDetectionResult> &truth) const
     {
         FumaroleDetectionEvaluation eval;
@@ -56,7 +85,7 @@ namespace Evaluation
         }
 
         // sum min l1 error
-        eval.Error = std::accumulate(l1Min.begin(), l1Min.end(), 0);
+        eval.Error = std::accumulate(l1Min.begin(), l1Min.end(), 0.0);
 
         return eval;
     }
