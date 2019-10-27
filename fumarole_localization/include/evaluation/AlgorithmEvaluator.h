@@ -38,6 +38,7 @@ namespace Evaluation
 
     private:
         void ConvertResultsToEigenVectors(const std::vector<Recognition::FumaroleDetectionResult>& results, std::vector<Eigen::Vector4f>& vectors) const;
+        float ComputeIoU(const cv::Rect& r1, const cv::Rect& r2) const;
     };
 }
 

@@ -34,6 +34,8 @@ namespace Evaluation
         AlgorithmEvaluation eval;
         FumaroleDetectionEvaluation singleImageEval;
 
+        float totalIoU = 0.0;
+
         for (const auto& truthResult : truth)
         {
             eval.TotalNumberOfActualFumaroles += truthResult.second.size();
@@ -49,10 +51,12 @@ namespace Evaluation
                 singleImageEval.ImageID = truthResult.first;
                 eval.Evaluations.emplace_back(singleImageEval);
 
-                // accumulate total error
-                eval.Error += singleImageEval.Error;
+                // accumulate total average IoU
+                totalIoU += singleImageEval.AverageIoU;
             }
         }
+
+        eval.TotalAverageIoU = totalIoU / static_cast<float>(eval.Evaluations.size());
 
         return std::move(eval);
     }
@@ -62,15 +66,38 @@ namespace Evaluation
     {
         FumaroleDetectionEvaluation eval;
 
+        eval.NumberDetected = results.size();
+        eval.NumberOfActualFumaroles = truth.size();
+
+        // compute ious with each one in the ground truth dataset
+        std::vector<float> ious;
+        std::vector<float> correspondingIOUs;
+
+        for (const auto& result : results)
+        {
+            for (const auto& y : truth) {
+                float iou = ComputeIoU(result.BoundingBox, y.BoundingBox);
+                ious.push_back(iou);
+            }
+
+            // set the max iou from the list as the valid IOU
+            // ie; this was the corresponding rect to compare to in the ground truth set
+            auto maxIter = std::max_element(ious.begin(), ious.end());
+            correspondingIOUs.push_back(*maxIter);
+
+            // clear for matching next result
+            ious.clear();
+        }
+
+        eval.AverageIoU = std::accumulate(correspondingIOUs.begin(), correspondingIOUs.end(), 0.0) / static_cast<float>(correspondingIOUs.size());
+
+        /*
         // convert all bounding boxes to eigen vectors
         std::vector<Eigen::Vector4f> vectors;
         ConvertResultsToEigenVectors(results, vectors);
 
         std::vector<Eigen::Vector4f> truthVectors;
         ConvertResultsToEigenVectors(truth, truthVectors);
-
-        eval.NumberDetected = results.size();
-        eval.NumberOfActualFumaroles = truth.size();
 
         std::vector<float> l1Min;        // min l1 distances
         std::vector<float> l1Temp;       // l1 distances
@@ -94,14 +121,34 @@ namespace Evaluation
 
         // sum min l1 error
         eval.Error = std::accumulate(l1Min.begin(), l1Min.end(), 0.0);
+        */
 
         return eval;
+    }
+
+    // Compute IoU of 2 rects
+    float AlgorithmEvaluator::ComputeIoU(const cv::Rect &r1, const cv::Rect &r2) const
+    {
+        cv::Rect intersectionRect = r1 & r2;
+        float intersectionArea = static_cast<float>(intersectionRect.area());
+
+        if (intersectionRect.area() > 0)
+        {
+            cv::Rect unionRect = r1 | r2;
+
+            float unionArea = static_cast<float>(unionRect.area());
+            float iou = intersectionArea / unionArea;
+
+            return iou;
+        }
+
+        return 0.0;
     }
 
     // Convert list of results to Eigen vectors
     void AlgorithmEvaluator::ConvertResultsToEigenVectors(const std::vector<Recognition::FumaroleDetectionResult>& results, std::vector<Eigen::Vector4f> &vectors) const
     {
-        for (auto r : results) {
+        for (const auto& r : results) {
             vectors.emplace_back(Eigen::Vector4f(r.BoundingBox.x, r.BoundingBox.y, r.BoundingBox.x + r.BoundingBox.width, r.BoundingBox.y + r.BoundingBox.height));
         }
     }

@@ -20,7 +20,7 @@ namespace Evaluation
         std::string ImageID = "n/a";
         int NumberOfActualFumaroles = 0;
         int NumberDetected = 0;
-        float Error = 0.0;
+        float AverageIoU = 0.0;
     };
 
     /// Evaluation on multiple images (the entire detection algorithm)
@@ -28,7 +28,7 @@ namespace Evaluation
     {
         int TotalNumberOfActualFumaroles = 0;
         int TotalNumberDetected = 0;
-        float Error = 0.0;
+        float TotalAverageIoU = 0.0;
         std::vector<FumaroleDetectionEvaluation> Evaluations;
     };
 }

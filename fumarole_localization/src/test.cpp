@@ -35,13 +35,16 @@ int main(int argc, char** argv)
     std::cout << "\n\n--------------- Algorithm Evaluation ---------------\n";
     std::cout << "\nTotal number of detections = " << eval.TotalNumberDetected;
     std::cout << "\nActual number of detections = " << eval.TotalNumberOfActualFumaroles;
-    std::cout << "\nTotal Error: " << eval.Error;
+    std::cout << "\nTotal Average IoU = " << eval.TotalAverageIoU;
+    std::cout << "\nTotal Accuracy (%) = " << eval.TotalAverageIoU * 100;
 
     // print out individual results
     std::cout << "\n\n--------------- Image Evaluation ---------------\n";
     std::cout << std::setw(12) << std::setfill(' ') << "\nImage ID";
     std::cout << std::setw(10) << std::setfill(' ') << " ";
-    std::cout << std::setw(10) << std::setfill(' ') << "Error";
+    std::cout << std::setw(10) << std::setfill(' ') << "Avg IoU";
+    std::cout << std::setw(10) << std::setfill(' ') << " ";
+    std::cout << std::setw(10) << std::setfill(' ') << "Accuracy %";
     std::cout << std::setw(10) << std::setfill(' ') << " ";
     std::cout << std::setw(10) << std::setfill(' ') << "Detected";
     std::cout << std::setw(10) << std::setfill(' ') << " ";
@@ -52,7 +55,9 @@ int main(int argc, char** argv)
     {
         std::cout << std::setw(12) << std::setfill(' ') << e.ImageID;
         std::cout << std::setw(10) << std::setfill(' ') << " ";
-        std::cout << std::setw(10) << std::setfill(' ') << e.Error;
+        std::cout << std::setw(10) << std::setfill(' ') << e.AverageIoU;
+        std::cout << std::setw(10) << std::setfill(' ') << " ";
+        std::cout << std::setw(10) << std::setfill(' ') << e.AverageIoU * 100;
         std::cout << std::setw(10) << std::setfill(' ') << " ";
         std::cout << std::setw(10) << std::setfill(' ') << e.NumberDetected;
         std::cout << std::setw(10) << std::setfill(' ') << " ";
