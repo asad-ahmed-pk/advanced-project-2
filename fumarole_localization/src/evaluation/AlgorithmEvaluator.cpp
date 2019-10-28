@@ -91,38 +91,6 @@ namespace Evaluation
 
         eval.AverageIoU = std::accumulate(correspondingIOUs.begin(), correspondingIOUs.end(), 0.0) / static_cast<float>(correspondingIOUs.size());
 
-        /*
-        // convert all bounding boxes to eigen vectors
-        std::vector<Eigen::Vector4f> vectors;
-        ConvertResultsToEigenVectors(results, vectors);
-
-        std::vector<Eigen::Vector4f> truthVectors;
-        ConvertResultsToEigenVectors(truth, truthVectors);
-
-        std::vector<float> l1Min;        // min l1 distances
-        std::vector<float> l1Temp;       // l1 distances
-        cv::Mat image;
-
-        for (const auto& x : vectors)
-        {
-            // try and find the corresponding rect in the ground truth list
-            for (const auto& y : truthVectors) {
-                float l1Distance = abs((x - y).lpNorm<1>());
-                l1Temp.emplace_back(l1Distance);
-            }
-
-            // the min distance is the corresponding vector
-            auto minIter = std::min_element(l1Temp.begin(), l1Temp.end());
-            l1Min.emplace_back(*minIter);
-
-            // clear for next round
-            l1Temp.clear();
-        }
-
-        // sum min l1 error
-        eval.Error = std::accumulate(l1Min.begin(), l1Min.end(), 0.0);
-        */
-
         return eval;
     }
 
