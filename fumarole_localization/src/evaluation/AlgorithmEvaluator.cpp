@@ -122,7 +122,8 @@ namespace Evaluation
     }
 
     // Draw bounding boxes of both detection and ground truths for comparison
-    void AlgorithmEvaluator::DrawDetectionsVsGroundtruth(const std::string &fileID,
+    void AlgorithmEvaluator::DrawDetectionsVsGroundtruth(const std::string& fileID,
+                                                         const std::string& folder,
                                                          const std::vector<Recognition::FumaroleDetectionResult> &results,
                                                          const std::vector<Recognition::FumaroleDetectionResult> &truth) const
     {
@@ -140,9 +141,10 @@ namespace Evaluation
             cv::rectangle(image, x.BoundingBox, cv::Scalar(0, 0, 255));
         }
 
-        std::string savePath = Config::EVALUATION_IMAGES_OUTOUT_DIR;
-        if (!boost::filesystem::exists(savePath)) {
-            boost::filesystem::create_directory(savePath);
+        std::string savePath = Config::EVALUATION_IMAGES_OUTPUT_DIR + folder;
+        boost::filesystem::path path(savePath);
+        if (!boost::filesystem::exists(path)) {
+            boost::filesystem::create_directories(path);
         }
         savePath += fileID;
         savePath += Config::IMAGE_OUTPUT_EXT;

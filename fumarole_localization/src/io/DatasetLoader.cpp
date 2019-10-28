@@ -7,7 +7,6 @@
 #include "config/config.hpp"
 
 #include <iostream>
-#include <fstream>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
@@ -16,11 +15,11 @@
 
 namespace IO
 {
-    // Load test file IDs
-    void DatasetLoader::GetTestFiles(std::map<std::string, std::string>& files)
+    // Load test file IDs in the given folder
+    void DatasetLoader::GetTestFiles(const std::string& folder, std::map<std::string, std::string>& files)
     {
         std::ifstream is;
-        is.open(Config::TEST_ID_LIST_PATH, std::ios::in);
+        is.open(Config::RESOURCES_DIR + folder + Config::TEST_ID_LIST_FILE_NAME, std::ios::in);
 
         std::string fileID;
         std::string filePath;
@@ -42,10 +41,10 @@ namespace IO
     }
 
     // Load test data and ground truth
-    void DatasetLoader::LoadTestData(std::map<std::string, std::string>& testFiles, std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>>& groundTruth)
+    void DatasetLoader::LoadTestData(const std::string& folder, std::map<std::string, std::string>& testFiles, std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>>& groundTruth)
     {
         // get the test files
-        GetTestFiles(testFiles);
+        GetTestFiles(folder, testFiles);
 
         // load the bounding box ground truth data
         boost::property_tree::ptree ptree;
@@ -57,7 +56,7 @@ namespace IO
 
         for (std::map<std::string, std::string>::const_iterator iter = testFiles.begin(); iter != testFiles.end(); iter++)
         {
-            filePath = Config::TEST_GROUND_TRUTH_BOUNDING_BOX_XML_DIR + iter->first + ".xml";
+            filePath = Config::RESOURCES_DIR + folder + iter->first + ".xml";
 
             // to init the key (even if no fumaroles exist for this image)
             groundTruth[iter->first];

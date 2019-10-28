@@ -12,12 +12,14 @@
 #include <iostream>
 #include <iomanip>
 
+const std::string FOLDER { "test_set_1/" };
+
 int main(int argc, char** argv)
 {
     // Load test files and ground truth
     std::map<std::string, std::string> testFiles;
     std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>> groundTruth;
-    IO::DatasetLoader::LoadTestData(testFiles, groundTruth);
+    IO::DatasetLoader::LoadTestData(FOLDER, testFiles, groundTruth);
 
     // run detection
     std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>> results;
@@ -69,7 +71,7 @@ int main(int argc, char** argv)
     // draw the results vs ground truth for comparison
     std::cout << "\n\nSaving ground truth vs results" << std::endl;
     for (const auto& y : groundTruth) {
-        evaluator.DrawDetectionsVsGroundtruth(y.first, results[y.first], y.second);
+        evaluator.DrawDetectionsVsGroundtruth(y.first, FOLDER, results[y.first], y.second);
     }
 
     std::cout << std::endl;

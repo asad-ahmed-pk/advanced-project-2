@@ -20,12 +20,13 @@ namespace IO
     public:
         /// Loads the file IDs from the given file
         /// \param files A reference to a map that will be filled with <file id: file path>
-        static void GetTestFiles(std::map<std::string, std::string> &files);
+        static void GetTestFiles(const std::string& folder, std::map<std::string, std::string> &files);
 
         /// Load testing data to test the algorithm and pipeline
+        /// \param folder The name of the folder in the resources directory that has the list of labelImg files
         /// \param testFiles Will be loaded with <file id: file path>
         /// \param groundTruth Will be loaded with <file id: the list of ground truth recognition results>
-        static void LoadTestData(std::map<std::string, std::string>& testFiles, std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>>& groundTruth);
+        static void LoadTestData(const std::string& folder, std::map<std::string, std::string>& testFiles, std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>>& groundTruth);
     };
 }
 

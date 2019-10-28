@@ -34,7 +34,12 @@ namespace Evaluation
         /// \return Returns the evaluation result
         FumaroleDetectionEvaluation EvaluateDetections(const std::vector<Recognition::FumaroleDetectionResult>& results, const std::vector<Recognition::FumaroleDetectionResult>& truth) const;
 
-        void DrawDetectionsVsGroundtruth(const std::string& fileID, const std::vector<Recognition::FumaroleDetectionResult>& results, const std::vector<Recognition::FumaroleDetectionResult>& truth) const;
+        /// Draw the detections (red) vs the ground truth (blue) bounding boxes
+        /// \param fileID The ID of the file
+        /// \param folder The folder name to group this result in
+        /// \param results A list of detection results
+        /// \param truth A list of ground truth results
+        void DrawDetectionsVsGroundtruth(const std::string& fileID, const std::string& folder, const std::vector<Recognition::FumaroleDetectionResult>& results, const std::vector<Recognition::FumaroleDetectionResult>& truth) const;
 
     private:
         void ConvertResultsToEigenVectors(const std::vector<Recognition::FumaroleDetectionResult>& results, std::vector<Eigen::Vector4f>& vectors) const;
