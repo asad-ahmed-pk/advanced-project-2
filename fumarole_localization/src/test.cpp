@@ -8,7 +8,6 @@
 
 #include <map>
 #include <vector>
-#include <string>
 #include <iostream>
 #include <iomanip>
 
@@ -33,15 +32,22 @@ int main(int argc, char** argv)
     Evaluation::AlgorithmEvaluator evaluator;
     Evaluation::AlgorithmEvaluation eval = evaluator.EvaluateDetectionPipeline(results, groundTruth);
 
+    const float precision = static_cast<float>(eval.TotalNumberDetected) / static_cast<float>(eval.TotalNumberOfActualFumaroles) * 100;
+
     // print out evaluation results
     std::cout << "\n\n--------------- Algorithm Evaluation ---------------\n";
     std::cout << "\nTotal number of detections = " << eval.TotalNumberDetected;
     std::cout << "\nActual number of detections = " << eval.TotalNumberOfActualFumaroles;
     std::cout << "\nTotal Average IoU = " << eval.TotalAverageIoU;
     std::cout << "\nTotal Accuracy (%) = " << eval.TotalAverageIoU * 100;
+    std::cout << "\nTotal Precision (%) = " << precision;
+    if (precision > 100) {
+        std::cout << " (Over detected)";
+    }
+    std::cout << std::endl;
 
     // print out individual results
-    std::cout << "\n\n--------------- Image Evaluation ---------------\n";
+    std::cout << "\n--------------- Image Evaluation ---------------\n";
     std::cout << std::setw(12) << std::setfill(' ') << "\nImage ID";
     std::cout << std::setw(10) << std::setfill(' ') << " ";
     std::cout << std::setw(10) << std::setfill(' ') << "Avg IoU";
