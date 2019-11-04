@@ -11,7 +11,7 @@
 #include <iostream>
 #include <iomanip>
 
-const std::string FOLDER { "test_set_1/" };
+const std::string FOLDER { "test_set_2/" };
 
 int main(int argc, char** argv)
 {
