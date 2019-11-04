@@ -4,6 +4,30 @@
 import os
 import sys
 import cv2
+import numpy as np
+
+
+def sobel(image):
+    """ Sobel filter based gradient magnitude """
+    Gx = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=3)
+    Gy = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=3)
+    G = np.sqrt(np.square(Gx) + np.square(Gy))
+    return G
+
+
+def DoG(image, k):
+    """ Difference of gaussians based gradient magnitude """
+    g1 = cv2.GaussianBlur(image, (1, 1), 0)
+    g2 = cv2.GaussianBlur(image, (k, k), 0)
+    return (g2 - g1)
+
+
+def nms(image):
+    """ Suppress non-max values """
+    val, t = cv2.threshold(image, 80, 255, cv2.THRESH_TOZERO)
+    return t
+
+
 
 # args
 if len(sys.argv) < 3:
@@ -23,9 +47,15 @@ if not os.path.exists(output_dir):
 
 for image_file in image_files:
     image = cv2.imread(image_file, cv2.IMREAD_GRAYSCALE)
-    Gx = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=3)
-    Gy = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=3)
-    grad_image = Gx * Gy
+    grad_image = sobel(image)
+    #grad_image = nms(grad_image)
+
+    copy = np.zeros(grad_image.shape)
+    copy[grad_image == 0] = 255
+
+    if (os.path.basename(image_file) == "CamThermal_001837380000.exr"):
+        cv2.imshow("Gradient", copy)
+        cv2.waitKey(0)
 
     filename =  os.path.splitext(os.path.basename(image_file))[0] + ".png"
     filepath = os.path.join(output_dir, filename)
