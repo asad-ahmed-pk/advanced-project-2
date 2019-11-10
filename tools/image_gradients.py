@@ -48,7 +48,7 @@ for image_file in image_files:
     image = cv2.imread(image_file, cv2.IMREAD_GRAYSCALE)
     grad_image, direction = sobel(image)
 
-    filename =  os.path.splitext(os.path.basename(image_file))[0] + ".png"
+    filename = os.path.splitext(os.path.basename(image_file))[0] + ".png"
     filepath = os.path.join(output_dir, filename)
 
     print("Saving gradient image:", filepath)
