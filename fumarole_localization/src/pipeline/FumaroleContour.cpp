@@ -26,7 +26,7 @@ namespace Pipeline
     FumaroleContour::~FumaroleContour() {}
 
     // Processing
-    void FumaroleContour::Process(const cv::Mat &input, cv::Mat &output, const std::shared_ptr<void>& previousElementResult, std::shared_ptr<void>& result, const std::string &filename) const
+    void FumaroleContour::Process(const cv::Mat &input, cv::Mat &output, const std::shared_ptr<void>& previousElementResult, std::shared_ptr<void>& result, const std::string &filename)
     {
         auto contourPoints = std::make_shared<std::vector<std::vector<cv::Point>>>();
         std::vector<cv::Vec4i> hierarchy;

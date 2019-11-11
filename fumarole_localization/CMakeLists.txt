@@ -22,6 +22,7 @@ include_directories(include)
 list(APPEND PIPELINE_SOURCES
         src/pipeline/PipelineElement.cpp
         src/pipeline/HeatThreshold.cpp
+        src/pipeline/HistogramAnalysis.cpp
         src/pipeline/FumaroleContour.cpp
         src/pipeline/FumaroleLocalizer.cpp
         src/pipeline/Pipeline.cpp
@@ -36,6 +37,7 @@ list(APPEND OTHER_SOURCES
         src/config/ConfigParser.cpp
         src/recognition/FumaroleRecognizer.cpp
         src/evaluation/AlgorithmEvaluator.cpp
+        src/model/FumaroleType.cpp
 )
 
 # Executables

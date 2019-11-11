@@ -52,8 +52,8 @@ namespace Recognition
     bool FumaroleRecognizer::RecognizeFumaroles(const std::map<std::string, std::string> &files, std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>> &results) const
     {
         // create new pipelines on image and run the result
-        Pipeline::Pipeline p1(files, Model::FumaroleType::FUMAROLE_VERY_HOT);
-        Pipeline::Pipeline p2(files, Model::FumaroleType::FUMAROLE_HOT);
+        Pipeline::Pipeline p1(files);
+        Pipeline::Pipeline p2(files);
 
         // run pipelines
         bool p1Success = p1.Run();
@@ -63,9 +63,9 @@ namespace Recognition
         {
             // convert localizations of pipelines into results
             std::map<std::string, std::vector<FumaroleDetectionResult>> results1 = std::move(
-                    ConvertLocalizations(p1.GetLocalizations(), Model::FumaroleType::FUMAROLE_VERY_HOT));
+                    ConvertLocalizations(p1.GetLocalizations(), Model::FumaroleType::FUMAROLE_OPEN_VENT));
             std::map<std::string, std::vector<FumaroleDetectionResult>> results2 = std::move(
-                    ConvertLocalizations(p2.GetLocalizations(), Model::FumaroleType::FUMAROLE_HOT));
+                    ConvertLocalizations(p2.GetLocalizations(), Model::FumaroleType::FUMAROLE_OPEN_VENT));
 
             // merge results of both heat pipelines
             DetectionMap mergedMap = MergeResults(results1, results2);
@@ -175,7 +175,7 @@ namespace Recognition
 
             // draw all detected bounding boxes on this image
             for (const FumaroleDetectionResult& r : result.second) {
-                cv::rectangle(image, r.BoundingBox, r.Type == Model::FumaroleType::FUMAROLE_VERY_HOT ? cv::Scalar(0, 0, 255) : cv::Scalar(0, 166, 255));
+                cv::rectangle(image, r.BoundingBox, r.Type == Model::FumaroleType::FUMAROLE_OPEN_VENT ? cv::Scalar(0, 0, 255) : cv::Scalar(0, 166, 255));
             }
 
             path = Config::FINAL_RESULTS_OUTPUT_DIR;

@@ -29,7 +29,7 @@ namespace Pipeline
         /// \param input The input image to process
         /// \param output A reference to the output image that will be set with the output
         /// \param filename The name of the file to use if intermediate results are to be written to file
-        void Process(const cv::Mat& input, cv::Mat& output, const std::shared_ptr<void>& previousElementResult, std::shared_ptr<void>& result, const std::string& filename = "") const override;
+        void Process(const cv::Mat& input, cv::Mat& output, const std::shared_ptr<void>& previousElementResult, std::shared_ptr<void>& result, const std::string& filename = "") override;
 
     private:
         void FilterContourNoise(std::vector<std::vector<cv::Point>>& contours) const;

@@ -12,43 +12,35 @@
 
 #include "pipeline/Pipeline.hpp"
 #include "pipeline/HeatThreshold.hpp"
+#include "pipeline/HistogramAnalysis.hpp"
 #include "pipeline/FumaroleContour.hpp"
 #include "pipeline/FumaroleLocalizer.hpp"
 #include "config/ConfigParser.hpp"
 
 namespace Pipeline
 {
+    const int HEAT_THRESHOLD_LOWER { 80 };
+    const int HEAT_THRESHOLD_UPPER { 255 };
+
     // Constructor that runs on multiple images
-    Pipeline::Pipeline(const std::map<std::string, std::string>& files, Model::FumaroleType type) : m_Files(files), m_FumaroleType(type)
+    Pipeline::Pipeline(const std::map<std::string, std::string>& files) : m_Files(files)
     {
         // threshold values
+        /*
         int t1 = Config::ConfigParser::GetInstance().GetValue<int>("config.pipeline.heat_threshold.threshold_intensity_very_hot");
         int t2 = Config::ConfigParser::GetInstance().GetValue<int>("config.pipeline.heat_threshold.threshold_intensity_hot");
         int t2Max = Config::ConfigParser::GetInstance().GetValue<int>("config.pipeline.heat_threshold.threshold_intensity_hot_upper");
+        */
 
-        // type as string
-        std::string typeName;
+        // 1. Heat threshold - remove cold temperature range from thermal
+        auto heat = std::make_unique<HeatThreshold>("heat_threshold", HEAT_THRESHOLD_LOWER, HEAT_THRESHOLD_UPPER);
+        m_Elements.emplace_back(std::move(heat));
 
-        // create the starting element (threshold) based on the fumarole type
-        switch (m_FumaroleType)
-        {
-            // very hot
-            case Model::FumaroleType::FUMAROLE_VERY_HOT: {
-                auto h1 = std::make_unique<HeatThreshold>("very_hot_threshold", t1, 255);
-                m_Elements.emplace_back(std::move(h1));
-                typeName = "very_hot";
-                break;
-            }
+        // 2. Histogram analysis - find best value of k for heat bins for k-means segmentation
+        auto histogram = std::make_unique<HistogramAnalysis>("histogram_analysis");
+        m_Elements.emplace_back(std::move(histogram));
 
-            // hot
-            case Model::FumaroleType::FUMAROLE_HOT: {
-                auto h2 = std::make_unique<HeatThreshold>("hot_threshold", t2, t2Max);
-                m_Elements.emplace_back(std::move(h2));
-                typeName = "hot";
-                break;
-            }
-        }
-
+        /*
         // contour detection
         auto c1 =  std::make_unique<FumaroleContour>("contour_detection_" + typeName);
         m_Elements.emplace_back(std::move(c1));
@@ -56,6 +48,7 @@ namespace Pipeline
         // final element - localize contours onto original image
         auto l1 = std::make_unique<FumaroleLocalizer>("localized_" + typeName);
         m_Elements.emplace_back(std::move(l1));
+        */
     }
 
     // Destructor

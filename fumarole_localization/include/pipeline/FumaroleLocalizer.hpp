@@ -29,7 +29,7 @@ namespace Pipeline
         /// \param previousElementResult A void pointer to arbitrary data of the previous pipeline element
         /// \param result A reference to the the pointer to set to the result for this pipeline element
         /// \param filename The name of the file that must be saved (if provided)
-        void Process(const cv::Mat& input, cv::Mat& output, const std::shared_ptr<void>& previousElementResult, std::shared_ptr<void>& result, const std::string& filename = "") const override;
+        void Process(const cv::Mat& input, cv::Mat& output, const std::shared_ptr<void>& previousElementResult, std::shared_ptr<void>& result, const std::string& filename = "") override;
     };
 }
 

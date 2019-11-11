@@ -23,7 +23,7 @@ namespace Pipeline
 
     }
 
-    void FumaroleLocalizer::Process(const cv::Mat &input, cv::Mat &output, const std::shared_ptr<void> &previousElementResult, std::shared_ptr<void> &result, const std::string &filename) const
+    void FumaroleLocalizer::Process(const cv::Mat &input, cv::Mat &output, const std::shared_ptr<void> &previousElementResult, std::shared_ptr<void> &result, const std::string &filename)
     {
         // get the original thermal image
         cv::Mat image;

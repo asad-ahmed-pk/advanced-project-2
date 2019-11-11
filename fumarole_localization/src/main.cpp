@@ -28,17 +28,20 @@ int main(int argc, char** argv)
     */
 
     // get files
-    std::map<std::string, std::string> files;
-    IO::GetGreyscaleHeatMaps(files);
+    std::map<std::string, std::string> files = {
+            { "503014", "../../../Data/0008/CamThermal/CamThermal_000503014000.exr" },
+            { "183738", "../../../Data/0009/CamThermal/CamThermal_001837380000.exr" },
+            { "183908", "../../../Data/0009/CamThermal/CamThermal_001839080000.exr" },
+            { "186258", "../../../Data/0009/CamThermal/CamThermal_001862580000.exr" },
+            { "194418", "../../../Data/0009/CamThermal/CamThermal_001944180000.exr" }
+    };
+    //IO::GetGreyscaleHeatMaps(files);
 
-    // construct pipelines
-    std::cout << "\n\nRunning pipeline for very hot fumaroles" << std::endl;
-    Pipeline::Pipeline pVeryHot(files, Model::FumaroleType::FUMAROLE_VERY_HOT);
-    pVeryHot.Run();
+    // construct pipeline
+    std::cout << "\n\nRunning pipeline" << std::endl;
 
-    std::cout << "\n\nRunning pipeline for hot fumaroles" << std::endl;
-    Pipeline::Pipeline pHot(files, Model::FumaroleType::FUMAROLE_HOT);
-    pHot.Run();
+    Pipeline::Pipeline pipeline(files);
+    pipeline.Run();
 
     std::cout << "\nDone" << std::endl;
 
