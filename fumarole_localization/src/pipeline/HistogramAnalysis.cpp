@@ -12,12 +12,12 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
 #include <string>
-#include <iterator>
+#include <algorithm>
 #include <boost/algorithm/string.hpp>
 
 namespace Pipeline
 {
-    const float MIN_FREQUENCY_REQ = 10e6;
+    const float MIN_REL_FREQUENCY_REQ = 0.4;
 
     HistogramAnalysis::HistogramAnalysis(const std::string &name) : PipelineElement(name)
     {
@@ -49,7 +49,6 @@ namespace Pipeline
 
         // calculate histogram for all 256 values
         cv::calcHist(&image, 1, 0, cv::Mat(), histogram, 1, &size, &histRange);
-        cv::normalize(histogram, histogram, 0, 256, cv::NORM_MINMAX, -1, cv::Mat());
 
         // count the frequencies of the bins setup in config
         for (std::map<int, float>::const_iterator iter = m_BinFrequencies.begin(); iter != m_BinFrequencies.end(); iter++)
@@ -62,14 +61,27 @@ namespace Pipeline
             }
         }
 
+        // normalize by largest value to get relative frequencies
+        auto maxFrequencyIter = std::max_element(m_BinFrequencies.begin(), m_BinFrequencies.end(), [](const std::pair<int, float>& a, const std::pair<int, float>& b) {
+            return a.second < b.second;
+        });
+        float maxFrequency = maxFrequencyIter->second > 0 ? maxFrequencyIter->second : 1.0;
+
+        for (auto& kv : m_BinFrequencies) {
+            kv.second /= maxFrequency;
+        }
+
         // determine best value of k for k-means
         auto k = std::make_shared<int>(0);
 
-        for (const auto& kv : m_BinFrequencies) {
-            if (kv.second > MIN_FREQUENCY_REQ) {
+        for (const auto& kv : m_BinFrequencies)
+        {
+            std::cout << "\n" << kv.first << ": " << kv.second;
+            if (kv.second > MIN_REL_FREQUENCY_REQ) {
                 *k += 1;
             }
         }
+        std::cout << std::endl;
 
         // set result (k) and output is input as no processing done on image itself
         result = k;

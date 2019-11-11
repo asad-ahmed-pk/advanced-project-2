@@ -83,8 +83,8 @@ namespace Pipeline
             }
 
             // last element in the pipeline is the localization - save its input
-            auto contours = std::static_pointer_cast<std::vector<std::vector<cv::Point>>>(result);
-            m_Localizations[file.first] = std::move(*contours);
+            //auto contours = std::static_pointer_cast<std::vector<std::vector<cv::Point>>>(result);
+            //m_Localizations[file.first] = std::move(*contours);
 
             previousResult = nullptr;
         }
