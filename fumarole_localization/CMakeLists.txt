@@ -23,6 +23,7 @@ list(APPEND PIPELINE_SOURCES
         src/pipeline/PipelineElement.cpp
         src/pipeline/HeatThreshold.cpp
         src/pipeline/HistogramAnalysis.cpp
+        src/pipeline/Segmentation.cpp
         src/pipeline/FumaroleContour.cpp
         src/pipeline/FumaroleLocalizer.cpp
         src/pipeline/Pipeline.cpp
