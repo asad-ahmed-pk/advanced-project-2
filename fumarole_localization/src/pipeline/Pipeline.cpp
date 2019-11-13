@@ -13,6 +13,7 @@
 #include "pipeline/Pipeline.hpp"
 #include "pipeline/HeatThreshold.hpp"
 #include "pipeline/HistogramAnalysis.hpp"
+#include "pipeline/Segmentation.hpp"
 #include "pipeline/FumaroleContour.hpp"
 #include "pipeline/FumaroleLocalizer.hpp"
 #include "config/ConfigParser.hpp"
@@ -33,12 +34,16 @@ namespace Pipeline
         */
 
         // 1. Heat threshold - remove cold temperature range from thermal
-        auto heat = std::make_unique<HeatThreshold>("heat_threshold", HEAT_THRESHOLD_LOWER, HEAT_THRESHOLD_UPPER);
+        std::unique_ptr<HeatThreshold> heat = std::make_unique<HeatThreshold>("heat_threshold", HEAT_THRESHOLD_LOWER, HEAT_THRESHOLD_UPPER);
         m_Elements.emplace_back(std::move(heat));
 
         // 2. Histogram analysis - find best value of k for heat bins for k-means segmentation
-        auto histogram = std::make_unique<HistogramAnalysis>("histogram_analysis");
+        std::unique_ptr<HistogramAnalysis> histogram = std::make_unique<HistogramAnalysis>("histogram_analysis");
         m_Elements.emplace_back(std::move(histogram));
+
+        // 3. Segmentation - segment into k regions for intensity quantization based on the K from histogram analysis
+        std::unique_ptr<Segmentation> segmentation = std::make_unique<Segmentation>("segmentation");
+        m_Elements.emplace_back(std::move(segmentation));
 
         /*
         // contour detection

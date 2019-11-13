@@ -9,17 +9,19 @@
 #include "pipeline/PipelineElement.hpp"
 
 #include <string>
+#include <vector>
+#include <opencv2/core/types.hpp>
 
 namespace Pipeline
 {
-    class Segmentation : PipelineElement
+    class Segmentation : public PipelineElement
     {
     public:
         /// Constructor
         /// \param name The name for this pipeline element
         explicit Segmentation(const std::string& name);
 
-        ~Segmentation() override;
+        ~Segmentation();
 
         /// Process the given thermal image into k segments
         /// \param input The input image
@@ -28,6 +30,10 @@ namespace Pipeline
         /// \param result Will be set to nullptr as there is no result
         /// \param filename The name of the image file that is being processed
         virtual void Process(const cv::Mat& input, cv::Mat& output, const std::shared_ptr<void>& previousElementResult, std::shared_ptr<void>& result, const std::string& filename = "") override;
+
+    private:
+        void ConvertImageToPoints(const cv::Mat& image, std::vector<cv::Point2f>& points) const;
+        void ConvertPointsToImage(const std::vector<cv::Point2f>& points, cv::Mat& image, int rows, int cols) const;
     };
 }
 
