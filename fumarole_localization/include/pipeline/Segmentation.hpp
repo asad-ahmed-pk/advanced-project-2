@@ -33,7 +33,7 @@ namespace Pipeline
 
     private:
         void ConvertImageToPoints(const cv::Mat& image, std::vector<cv::Point2f>& points) const;
-        void ConvertPointsToImage(const std::vector<cv::Point2f>& points, cv::Mat& image, int rows, int cols) const;
+        void ConvertPointsToImage(const std::vector<cv::Point2f>& clusterCentroids, const std::vector<int>& clusterIndices, cv::Mat& image, int rows, int cols) const;
     };
 }
 

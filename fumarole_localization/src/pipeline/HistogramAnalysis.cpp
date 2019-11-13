@@ -17,7 +17,7 @@
 
 namespace Pipeline
 {
-    const float MIN_REL_FREQUENCY_REQ = 0.4;
+    const float MIN_REL_FREQUENCY_REQ = 0.1;
 
     HistogramAnalysis::HistogramAnalysis(const std::string &name) : PipelineElement(name)
     {
@@ -72,7 +72,7 @@ namespace Pipeline
         }
 
         // determine best value of k for k-means
-        auto k = std::make_shared<int>(0);
+        auto k = std::make_shared<int>(1);
 
         for (const auto& kv : m_BinFrequencies)
         {
