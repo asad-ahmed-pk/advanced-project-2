@@ -34,20 +34,20 @@ namespace Pipeline
         */
 
         // 1. Heat threshold - remove cold temperature range from thermal
-        std::unique_ptr<HeatThreshold> heat = std::make_unique<HeatThreshold>("heat_threshold", HEAT_THRESHOLD_LOWER, HEAT_THRESHOLD_UPPER);
+        std::unique_ptr<HeatThreshold> heat = std::make_unique<HeatThreshold>("heat_threshold");
         m_Elements.emplace_back(std::move(heat));
 
         // 2. Histogram analysis - find best value of k for heat bins for k-means segmentation
-        std::unique_ptr<HistogramAnalysis> histogram = std::make_unique<HistogramAnalysis>("histogram_analysis");
-        m_Elements.emplace_back(std::move(histogram));
+        //std::unique_ptr<HistogramAnalysis> histogram = std::make_unique<HistogramAnalysis>("histogram_analysis");
+        //m_Elements.emplace_back(std::move(histogram));
 
         // 3. Segmentation - segment into k regions for intensity quantization based on the K from histogram analysis
-        std::unique_ptr<Segmentation> segmentation = std::make_unique<Segmentation>("segmentation");
-        m_Elements.emplace_back(std::move(segmentation));
+        //std::unique_ptr<Segmentation> segmentation = std::make_unique<Segmentation>("segmentation");
+        //m_Elements.emplace_back(std::move(segmentation));
 
         // 4. Contour detection - detect all contours present in the segmented image
-        std::unique_ptr<FumaroleContour> contour = std::make_unique<FumaroleContour>("contours");
-        m_Elements.emplace_back(std::move(contour));
+        //std::unique_ptr<FumaroleContour> contour = std::make_unique<FumaroleContour>("contours");
+        //m_Elements.emplace_back(std::move(contour));
 
         /*
         // contour detection
