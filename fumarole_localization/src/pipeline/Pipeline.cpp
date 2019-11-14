@@ -45,6 +45,10 @@ namespace Pipeline
         std::unique_ptr<Segmentation> segmentation = std::make_unique<Segmentation>("segmentation");
         m_Elements.emplace_back(std::move(segmentation));
 
+        // 4. Contour detection - detect all contours present in the segmented image
+        std::unique_ptr<FumaroleContour> contour = std::make_unique<FumaroleContour>("contours");
+        m_Elements.emplace_back(std::move(contour));
+
         /*
         // contour detection
         auto c1 =  std::make_unique<FumaroleContour>("contour_detection_" + typeName);

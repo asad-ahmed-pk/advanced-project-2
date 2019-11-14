@@ -33,7 +33,7 @@ namespace Pipeline
 
         output = cv::Mat::zeros(input.rows, input.cols, CV_8UC3);
 
-        cv::findContours(input, *contourPoints, hierarchy, cv::RetrievalModes::RETR_EXTERNAL, cv::ContourApproximationModes::CHAIN_APPROX_SIMPLE);
+        cv::findContours(input, *contourPoints, hierarchy, cv::RetrievalModes::RETR_CCOMP, cv::ContourApproximationModes::CHAIN_APPROX_SIMPLE);
 
         // filter out noise (contours with very small areas)
         if (!contourPoints->empty())

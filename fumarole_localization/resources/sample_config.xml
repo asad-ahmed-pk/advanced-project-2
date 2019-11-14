@@ -5,7 +5,7 @@
             <upper>255</upper>
         </heat_threshold>
         <histogram>
-            <bins>80 180 200</bins>
+            <bins>80 160 220</bins>
         </histogram>
         <contour>
             <min_area>30</min_area>
