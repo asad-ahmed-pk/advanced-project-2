@@ -6,15 +6,17 @@
 #include "pipeline/HeatThreshold.hpp"
 #include "config/ConfigParser.hpp"
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include <opencv2/core/core.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
 
 namespace Pipeline
 {
+    const int MAX_RANGES { 4 };
+
     // Constructor
     HeatThreshold::HeatThreshold(const std::string &name) : PipelineElement(name)
     {
@@ -22,6 +24,12 @@ namespace Pipeline
         std::string bins = Config::ConfigParser::GetInstance().GetValue<std::string>("config.pipeline.histogram.bins");
         std::vector<std::string> binValues;
         boost::split(binValues, bins, boost::is_space());
+
+        // check to ensure max 4 ranges
+        if (binValues.size() > MAX_RANGES) {
+            std::cerr << "\nOnly a max of 4 ranges is supported. Ignoring excess ranges" << std::endl;
+            binValues.erase(binValues.begin() + MAX_RANGES, binValues.end());
+        }
 
         std::transform(binValues.begin(), binValues.end(), std::back_inserter(m_HeatRanges), [&](const std::string& str) { return std::stoi(str); });
     }
@@ -34,7 +42,8 @@ namespace Pipeline
         int c = 0;
 
         // set output image
-        output = cv::Mat(input.rows, input.cols, CV_8UC3);
+        int type = GetTypeForRangeCount(m_HeatRanges.size());
+        output = cv::Mat(input.rows, input.cols, type);
 
         // apply threshold and save in separate channel of output
         for (auto iter = m_HeatRanges.begin(); iter != m_HeatRanges.end(); iter++)
@@ -82,6 +91,28 @@ namespace Pipeline
                 channels[channel] = thresholdOutput.at<uchar>(row, col);
                 output.at<cv::Vec3b>(row, col) = channels;
             }
+        }
+    }
+
+    // Get CV type based on the number of ranges
+    int HeatThreshold::GetTypeForRangeCount(int rangeCount)
+    {
+        switch (rangeCount)
+        {
+            case 1:
+                return CV_8U;
+
+            case 2:
+                return CV_8UC2;
+
+            case 3:
+                return CV_8UC3;
+
+            case 4:
+                return CV_8UC4;
+
+            default:
+                return 1;
         }
     }
 }

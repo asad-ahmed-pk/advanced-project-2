@@ -30,6 +30,7 @@ namespace Pipeline
 
     private:
         void ThresholdImage(const cv::Mat& input, cv::Mat& output, int channel, int lower, int upper);
+        static int GetTypeForRangeCount(int rangeCount);
 
     private:
         std::vector<int> m_HeatRanges;
