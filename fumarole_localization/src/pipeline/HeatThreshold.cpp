@@ -42,8 +42,7 @@ namespace Pipeline
         int c = 0;
 
         // set output image
-        int type = GetTypeForRangeCount(m_HeatRanges.size());
-        output = cv::Mat(input.rows, input.cols, type);
+        output = cv::Mat(input.rows, input.cols, CV_8UC4);
 
         // apply threshold and save in separate channel of output
         for (auto iter = m_HeatRanges.begin(); iter != m_HeatRanges.end(); iter++)
@@ -62,18 +61,9 @@ namespace Pipeline
         cv::split(output, thresholds);
         c= 0;
 
-        for (const cv::Mat& image : thresholds) {
-            SaveResult(image, std::to_string(c++) + "_" + filename);
+        for (int i = 0; i < m_HeatRanges.size(); i++) {
+            SaveResult(thresholds[i], std::to_string(c++) + "_" + filename);
         }
-
-        /*
-        cv::threshold(input, output, m_Threshold, m_MaxValue, cv::ThresholdTypes::THRESH_TOZERO);
-        //cv::inRange(input, m_Threshold, m_MaxValue, output);
-
-        if (!filename.empty()) {
-            SaveResult(output, filename);
-        }
-         */
     }
 
     // Apply threshold to input and store in given channel
@@ -81,38 +71,16 @@ namespace Pipeline
     {
         cv::Mat thresholdOutput;
         cv::inRange(input, lower, upper, thresholdOutput);
-        cv::Vec3b channels;
+        cv::Vec4b channels;
 
         for (int row = 0; row < output.rows; row++)
         {
             for (int col = 0; col < output.cols; col++)
             {
-                channels = output.at<cv::Vec3b>(row, col);
+                channels = output.at<cv::Vec4b>(row, col);
                 channels[channel] = thresholdOutput.at<uchar>(row, col);
-                output.at<cv::Vec3b>(row, col) = channels;
+                output.at<cv::Vec4b>(row, col) = channels;
             }
-        }
-    }
-
-    // Get CV type based on the number of ranges
-    int HeatThreshold::GetTypeForRangeCount(int rangeCount)
-    {
-        switch (rangeCount)
-        {
-            case 1:
-                return CV_8U;
-
-            case 2:
-                return CV_8UC2;
-
-            case 3:
-                return CV_8UC3;
-
-            case 4:
-                return CV_8UC4;
-
-            default:
-                return 1;
         }
     }
 }
