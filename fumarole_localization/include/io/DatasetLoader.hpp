@@ -11,7 +11,7 @@
 #include <map>
 #include <opencv2/core/types.hpp>
 
-#include "recognition/FumaroleDetectionResult.hpp"
+#include "detection/FumaroleDetection.hpp"
 
 namespace IO
 {
@@ -26,7 +26,7 @@ namespace IO
         /// \param folder The name of the folder in the resources directory that has the list of labelImg files
         /// \param testFiles Will be loaded with <file id: file path>
         /// \param groundTruth Will be loaded with <file id: the list of ground truth recognition results>
-        static void LoadTestData(const std::string& folder, std::map<std::string, std::string>& testFiles, std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>>& groundTruth);
+        static void LoadTestData(const std::string& folder, std::map<std::string, std::string>& testFiles, std::map<std::string, std::vector<Detection::FumaroleDetection>>& groundTruth);
     };
 }
 

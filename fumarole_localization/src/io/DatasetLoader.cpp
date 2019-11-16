@@ -41,7 +41,7 @@ namespace IO
     }
 
     // Load test data and ground truth
-    void DatasetLoader::LoadTestData(const std::string& folder, std::map<std::string, std::string>& testFiles, std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>>& groundTruth)
+    void DatasetLoader::LoadTestData(const std::string& folder, std::map<std::string, std::string>& testFiles, std::map<std::string, std::vector<Detection::FumaroleDetection>>& groundTruth)
     {
         // get the test files
         GetTestFiles(folder, testFiles);
@@ -75,7 +75,7 @@ namespace IO
                         width = child.second.get<int>("bndbox.xmax") - x;
                         height = child.second.get<int>("bndbox.ymax") - y;
 
-                        Recognition::FumaroleDetectionResult r;
+                        Detection::FumaroleDetection r;
                         r.BoundingBox = std::move(cv::Rect(x, y, width, height));
                         r.ImageID = iter->first;
 

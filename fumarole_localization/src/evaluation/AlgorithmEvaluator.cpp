@@ -1,9 +1,9 @@
 //
 // AlgorithmEvaluator.h
-// Evaluates the performance of the fumarole recognition
+// Evaluates the performance of the fumarole detection
 //
 
-#include "evaluation/AlgorithmEvaluator.h"
+#include "evaluation/AlgorithmEvaluator.hpp"
 #include "io/fumarole_data_io.hpp"
 
 #include <algorithm>
@@ -28,8 +28,8 @@ namespace Evaluation
 
     // Evaluate whole pipeline
     AlgorithmEvaluation AlgorithmEvaluator::EvaluateDetectionPipeline(
-            const std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>> &results,
-            const std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>> &truth) const
+            const std::map<std::string, std::vector<Detection::FumaroleDetection>> &results,
+            const std::map<std::string, std::vector<Detection::FumaroleDetection>> &truth) const
     {
         AlgorithmEvaluation eval;
         FumaroleDetectionEvaluation singleImageEval;
@@ -40,7 +40,7 @@ namespace Evaluation
         {
             eval.TotalNumberOfActualFumaroles += truthResult.second.size();
 
-            // get corresponding recognition from the pipeline
+            // get corresponding detection from the pipeline
             auto iter = results.find(truthResult.first);
             if (iter != results.end())
             {
@@ -62,7 +62,7 @@ namespace Evaluation
     }
 
     // Evaluate single image results
-    FumaroleDetectionEvaluation AlgorithmEvaluator::EvaluateDetections(const std::vector<Recognition::FumaroleDetectionResult> &results, const std::vector<Recognition::FumaroleDetectionResult> &truth) const
+    FumaroleDetectionEvaluation AlgorithmEvaluator::EvaluateDetections(const std::vector<Detection::FumaroleDetection> &results, const std::vector<Detection::FumaroleDetection> &truth) const
     {
         FumaroleDetectionEvaluation eval;
 
@@ -114,7 +114,7 @@ namespace Evaluation
     }
 
     // Convert list of results to Eigen vectors
-    void AlgorithmEvaluator::ConvertResultsToEigenVectors(const std::vector<Recognition::FumaroleDetectionResult>& results, std::vector<Eigen::Vector4f> &vectors) const
+    void AlgorithmEvaluator::ConvertResultsToEigenVectors(const std::vector<Detection::FumaroleDetection>& results, std::vector<Eigen::Vector4f> &vectors) const
     {
         for (const auto& r : results) {
             vectors.emplace_back(Eigen::Vector4f(r.BoundingBox.x, r.BoundingBox.y, r.BoundingBox.x + r.BoundingBox.width, r.BoundingBox.y + r.BoundingBox.height));
@@ -124,8 +124,8 @@ namespace Evaluation
     // Draw bounding boxes of both detection and ground truths for comparison
     void AlgorithmEvaluator::DrawDetectionsVsGroundtruth(const std::string& fileID,
                                                          const std::string& folder,
-                                                         const std::vector<Recognition::FumaroleDetectionResult> &results,
-                                                         const std::vector<Recognition::FumaroleDetectionResult> &truth) const
+                                                         const std::vector<Detection::FumaroleDetection> &results,
+                                                         const std::vector<Detection::FumaroleDetection> &truth) const
     {
         // draw the bounding boxes of detections vs the ground truth bounding boxes
         cv::Mat image;

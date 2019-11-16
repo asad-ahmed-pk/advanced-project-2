@@ -1,10 +1,10 @@
 //
-// FumaroleDetectionResult.hpp
+// FumaroleDetection.hpp
 // Encapsulates a result of a detected fumarole in an image
 //
 
-#ifndef FUMAROLE_LOCALIZATION_FUMAROLEDETECTIONRESULT_HPP
-#define FUMAROLE_LOCALIZATION_FUMAROLEDETECTIONRESULT_HPP
+#ifndef FUMAROLE_LOCALIZATION_FUMAROLEDETECTION_HPP
+#define FUMAROLE_LOCALIZATION_FUMAROLEDETECTION_HPP
 
 #include <vector>
 #include <opencv2/core/core.hpp>
@@ -12,14 +12,15 @@
 
 #include "model/FumaroleType.hpp"
 
-namespace Recognition
+namespace Detection
 {
-    struct FumaroleDetectionResult
+    struct FumaroleDetection
     {
         std::string ImageID;
         Model::FumaroleType Type;
         cv::Rect BoundingBox;
+        std::vector<cv::Point> Contour;
     };
 }
 
-#endif //FUMAROLE_LOCALIZATION_FUMAROLEDETECTIONRESULT_HPP
+#endif //FUMAROLE_LOCALIZATION_FUMAROLEDETECTION_HPP

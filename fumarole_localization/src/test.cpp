@@ -4,7 +4,7 @@
 #include "io/DatasetLoader.hpp"
 #include "recognition/FumaroleRecognizer.hpp"
 #include "evaluation/Evaluation.hpp"
-#include "evaluation/AlgorithmEvaluator.h"
+#include "evaluation/AlgorithmEvaluator.hpp"
 
 #include <map>
 #include <vector>
@@ -17,11 +17,11 @@ int main(int argc, char** argv)
 {
     // Load test files and ground truth
     std::map<std::string, std::string> testFiles;
-    std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>> groundTruth;
+    std::map<std::string, std::vector<Recognition::FumaroleDetection>> groundTruth;
     IO::DatasetLoader::LoadTestData(FOLDER, testFiles, groundTruth);
 
     // run detection
-    std::map<std::string, std::vector<Recognition::FumaroleDetectionResult>> results;
+    std::map<std::string, std::vector<Recognition::FumaroleDetection>> results;
 
     // save the results
     Recognition::FumaroleRecognizer recognizer;
