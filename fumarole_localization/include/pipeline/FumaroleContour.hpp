@@ -1,17 +1,19 @@
 //
 // FumaroleContour.hpp
 // Pipeline element for detecting and drawing contours for fumaroles
-// Expects input to be a threshold binary image
+// Expects input to be a threshold binary image with each chanel representing a different threshold result
 //
 
 #ifndef FUMAROLE_LOCALIZATION_FUMAROLECONTOUR_HPP
 #define FUMAROLE_LOCALIZATION_FUMAROLECONTOUR_HPP
 
+#include "pipeline/Typedefs.hpp"
+#include "pipeline/PipelineElement.hpp"
+
 #include <opencv2/core/core.hpp>
 #include <vector>
 #include <string>
-
-#include "PipelineElement.hpp"
+#include <map>
 
 namespace Pipeline
 {
@@ -33,6 +35,8 @@ namespace Pipeline
 
     private:
         void FilterContourNoise(std::vector<std::vector<cv::Point>>& contours) const;
+        std::vector<std::vector<cv::Point>> FindContours(const cv::Mat& image) const;
+        void SaveContourResults(const FumaroleContours& contours, const std::string& filename) const;
 
     private:
         float m_MinAreaFilter;

@@ -4,8 +4,10 @@
 // Expects input to be a threshold binary image
 //
 
+#include "pipeline/Typedefs.hpp"
 #include "pipeline/FumaroleContour.hpp"
 #include "config/ConfigParser.hpp"
+#include "io/fumarole_data_io.hpp"
 
 #include <memory>
 #include <vector>
@@ -28,38 +30,36 @@ namespace Pipeline
     // Processing
     void FumaroleContour::Process(const cv::Mat &input, cv::Mat &output, const std::shared_ptr<void>& previousElementResult, std::shared_ptr<void>& result, const std::string &filename)
     {
-        auto contourPoints = std::make_shared<std::vector<std::vector<cv::Point>>>();
-        std::vector<cv::Vec4i> hierarchy;
+        auto contours = std::make_shared<FumaroleContours>();
 
-        output = cv::Mat::zeros(input.rows, input.cols, CV_8UC3);
-
-        cv::findContours(input, *contourPoints, hierarchy, cv::RetrievalModes::RETR_CCOMP, cv::ContourApproximationModes::CHAIN_APPROX_SIMPLE);
-
-        // filter out noise (contours with very small areas)
-        if (!contourPoints->empty())
-        {
-            FilterContourNoise(*contourPoints);
-
-            if (!contourPoints->empty())
-            {
-                /*
-                for (const auto &c : *contourPoints) {
-                    std::cout << "Contour Area: " << cv::contourArea(c) << std::endl;
-                }
-                */
-
-                // draw contours
-                cv::drawContours(output, *contourPoints, -1, cv::Scalar(0, 0, 255), 1, cv::LINE_8);
-
-                // save this result to disk if contours present
-                if (!filename.empty()) {
-                    SaveResult(output, filename);
-                }
-            }
+        // split into channels - each channel is a separate heat thresholded image
+        std::vector<cv::Mat> images;
+        cv::split(input, images);
+        for (int i = 0; i < images.size(); i++) {
+            contours->emplace_back(FindContours(images[i]));
         }
 
         // set the result of the processing (contours)
-        result = contourPoints;
+        result = contours;
+
+        // Save contour results
+        SaveContourResults(*contours, filename);
+    }
+
+    // Finds contours in the given image
+    std::vector<std::vector<cv::Point>> FumaroleContour::FindContours(const cv::Mat& image) const
+    {
+        std::vector<cv::Vec4i> hierarchy;
+        std::vector<std::vector<cv::Point>> contours;
+
+        cv::findContours(image, contours, hierarchy, cv::RetrievalModes::RETR_EXTERNAL, cv::ContourApproximationModes::CHAIN_APPROX_SIMPLE);
+
+        // filter out noise (contours with very small areas)
+        if (!contours.empty()) {
+            FilterContourNoise(contours);
+        }
+
+        return std::move(contours);
     }
 
     // Remove the contours that are detected as noise (small area)
@@ -74,6 +74,23 @@ namespace Pipeline
             else {
                 iter++;
             }
+        }
+    }
+
+    // Save intermediate contour results
+    void FumaroleContour::SaveContourResults(const FumaroleContours& contours, const std::string& filename) const
+    {
+        int i = 0;
+        for (const std::vector<std::vector<cv::Point>>& contoursForThermalRange : contours)
+        {
+            cv::Mat output;
+            IO::GetThermalImage(filename, output, true);
+
+            if (!contoursForThermalRange.empty()) {
+                cv::drawContours(output, contoursForThermalRange, -1, cv::Scalar(0, 0, 255));
+            }
+
+            SaveResult(output, std::to_string(i++) + "_" + filename);
         }
     }
 }
