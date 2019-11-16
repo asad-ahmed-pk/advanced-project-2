@@ -1,10 +1,10 @@
 //
-// FumaroleRecognizer.hpp
+// FumaroleDetector.hpp
 // Takes input for fumarole thermal images and recognizes fumaroles
 //
 
-#ifndef FUMAROLE_LOCALIZATION_FUMAROLERECOGNIZER_HPP
-#define FUMAROLE_LOCALIZATION_FUMAROLERECOGNIZER_HPP
+#ifndef FUMAROLE_LOCALIZATION_FUMAROLEDETECTOR_HPP
+#define FUMAROLE_LOCALIZATION_FUMAROLEDETECTOR_HPP
 
 #include <map>
 #include <memory>
@@ -18,14 +18,14 @@ namespace Detection
     // Typedef for this recognizers main output - a map where key:fileID, value: list of detections
     typedef std::map<std::string, std::vector<FumaroleDetection>> DetectionMap;
 
-    class FumaroleRecognizer
+    class FumaroleDetector
     {
     public:
         /// Default constructor
-        FumaroleRecognizer();
+        FumaroleDetector();
 
         /// Destructor
-        ~FumaroleRecognizer();
+        ~FumaroleDetector();
 
         /// Recognize all the fumaroles in the given image
         /// \param fileID The ID to associate with this image
@@ -50,4 +50,4 @@ namespace Detection
     };
 }
 
-#endif //FUMAROLE_LOCALIZATION_FUMAROLERECOGNIZER_HPP
+#endif //FUMAROLE_LOCALIZATION_FUMAROLEDETECTOR_HPP

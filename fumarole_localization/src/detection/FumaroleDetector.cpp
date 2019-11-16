@@ -1,9 +1,9 @@
 //
-// FumaroleRecognizer.cpp
+// FumaroleDetector.cpp
 // Takes input for fumarole thermal images and recognizes fumaroles
 //
 
-#include "detection/FumaroleRecognizer.hpp"
+#include "detection/FumaroleDetector.hpp"
 #include "model/FumaroleType.hpp"
 #include "config/config.hpp"
 #include "io/fumarole_data_io.hpp"
@@ -19,20 +19,20 @@
 namespace Detection
 {
     // Constructor
-    FumaroleRecognizer::FumaroleRecognizer()
+    FumaroleDetector::FumaroleDetector()
     {
 
 
     }
 
     // Destructor
-    FumaroleRecognizer::~FumaroleRecognizer()
+    FumaroleDetector::~FumaroleDetector()
     {
 
     }
 
     // One-shot detection on single thermal image
-    bool FumaroleRecognizer::RecognizeFumaroles(const std::string& fileID, const std::string &thermalImagePath, std::vector<Detection::FumaroleDetection> &results) const
+    bool FumaroleDetector::RecognizeFumaroles(const std::string& fileID, const std::string &thermalImagePath, std::vector<Detection::FumaroleDetection> &results) const
     {
         // create the input map for the pipeline
         std::map<std::string, std::string> pipelineInput;
@@ -49,7 +49,7 @@ namespace Detection
         return false;
     }
 
-    bool FumaroleRecognizer::RecognizeFumaroles(const std::map<std::string, std::string> &files, std::map<std::string, std::vector<Detection::FumaroleDetection>> &results) const
+    bool FumaroleDetector::RecognizeFumaroles(const std::map<std::string, std::string> &files, std::map<std::string, std::vector<Detection::FumaroleDetection>> &results) const
     {
         // create new pipelines on image and run the result
         Pipeline::Pipeline p1(files);
@@ -78,7 +78,7 @@ namespace Detection
     }
 
     // Convert localizations from pipeline into detection results
-    std::map<std::string, std::vector<FumaroleDetection>> FumaroleRecognizer::ConvertLocalizations(const Pipeline::PipelineLocalizations &localizations, Model::FumaroleType type) const
+    std::map<std::string, std::vector<FumaroleDetection>> FumaroleDetector::ConvertLocalizations(const Pipeline::PipelineLocalizations &localizations, Model::FumaroleType type) const
     {
         std::map<std::string, std::vector<FumaroleDetection>> results;
         cv::Rect rect;
@@ -105,7 +105,7 @@ namespace Detection
     // Merge detections maps
     // m1: the high heat map
     // m2: the lower heat map
-    DetectionMap FumaroleRecognizer::MergeResults(const Detection::DetectionMap &m1, const Detection::DetectionMap &m2) const
+    DetectionMap FumaroleDetector::MergeResults(const Detection::DetectionMap &m1, const Detection::DetectionMap &m2) const
     {
         DetectionMap mergedMap;
         std::vector<FumaroleDetection> m2Detections;
@@ -157,7 +157,7 @@ namespace Detection
     }
 
     // Save results as images
-    void FumaroleRecognizer::SaveResults(const Detection::DetectionMap &resultMap) const
+    void FumaroleDetector::SaveResults(const Detection::DetectionMap &resultMap) const
     {
         // create output dir if needed
         if (!boost::filesystem::exists(Config::FINAL_RESULTS_OUTPUT_DIR)) {
