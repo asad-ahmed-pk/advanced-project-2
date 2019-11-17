@@ -46,6 +46,10 @@ namespace Pipeline
             cv::drawContours(output, contoursForImage, -1, cv::Scalar(0, 0, 255), 2);
         }
         SaveResult(output, filename);
+
+        // set result to vector of contours
+        std::shared_ptr<std::vector<std::vector<cv::Point>>> contourList = std::make_shared<std::vector<std::vector<cv::Point>>>(contoursForImage);
+        result = contourList;
     }
 
     // Return true if inner contour is inside outer contour

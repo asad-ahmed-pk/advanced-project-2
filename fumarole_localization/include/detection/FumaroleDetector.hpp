@@ -16,7 +16,7 @@
 namespace Detection
 {
     // Typedef for this recognizers main output - a map where key:fileID, value: list of detections
-    typedef std::map<std::string, std::vector<FumaroleDetection>> DetectionMap;
+    typedef std::map<std::string, std::vector<FumaroleDetection>> FumaroleDetectionsPerImage;
 
     class FumaroleDetector
     {
@@ -42,11 +42,10 @@ namespace Detection
 
         /// Save the result detection map [maps image id -> list of fumaroles] as images with the bounding boxes drawn on top
         /// \param resultMap A map with <file_id: <list of fumarole detection results>>
-        void SaveResults(const DetectionMap& resultMap) const;
+        void SaveResults(const FumaroleDetectionsPerImage& resultMap) const;
 
     private:
         std::map<std::string, std::vector<FumaroleDetection>> ConvertLocalizations(const Pipeline::PipelineLocalizations& localizations, Model::FumaroleType type) const;
-        DetectionMap MergeResults(const DetectionMap& m1, const DetectionMap& m2) const;
     };
 }
 

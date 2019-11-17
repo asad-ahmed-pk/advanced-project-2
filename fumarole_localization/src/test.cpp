@@ -2,7 +2,7 @@
 // Test program for testing the pipeline / detector against ground truth dataset
 
 #include "io/DatasetLoader.hpp"
-#include "recognition/FumaroleRecognizer.hpp"
+#include "detection/FumaroleDetector.hpp"
 #include "evaluation/Evaluation.hpp"
 #include "evaluation/AlgorithmEvaluator.hpp"
 
@@ -17,16 +17,16 @@ int main(int argc, char** argv)
 {
     // Load test files and ground truth
     std::map<std::string, std::string> testFiles;
-    std::map<std::string, std::vector<Recognition::FumaroleDetection>> groundTruth;
+    std::map<std::string, std::vector<Detection::FumaroleDetection>> groundTruth;
     IO::DatasetLoader::LoadTestData(FOLDER, testFiles, groundTruth);
 
     // run detection
-    std::map<std::string, std::vector<Recognition::FumaroleDetection>> results;
+    std::map<std::string, std::vector<Detection::FumaroleDetection>> results;
 
     // save the results
-    Recognition::FumaroleRecognizer recognizer;
-    recognizer.RecognizeFumaroles(testFiles, results);
-    recognizer.SaveResults(results);
+    Detection::FumaroleDetector detector;
+    detector.DetectFumaroles(testFiles, results);
+    detector.SaveResults(results);
 
     // evaluate the results
     Evaluation::AlgorithmEvaluator evaluator;
