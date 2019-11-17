@@ -22,7 +22,6 @@ namespace Detection
     FumaroleDetector::FumaroleDetector()
     {
 
-
     }
 
     // Destructor
@@ -32,7 +31,7 @@ namespace Detection
     }
 
     // One-shot detection on single thermal image
-    bool FumaroleDetector::RecognizeFumaroles(const std::string& fileID, const std::string &thermalImagePath, std::vector<Detection::FumaroleDetection> &results) const
+    bool FumaroleDetector::DetectFumaroles(const std::string& fileID, const std::string &thermalImagePath, std::vector<Detection::FumaroleDetection> &results) const
     {
         // create the input map for the pipeline
         std::map<std::string, std::string> pipelineInput;
@@ -40,7 +39,7 @@ namespace Detection
 
         // use the overloaded function for processing multiple images
         std::map<std::string, std::vector<Detection::FumaroleDetection>> multipleFileResults;
-        if (RecognizeFumaroles(pipelineInput, multipleFileResults))
+        if (DetectFumaroles(pipelineInput, multipleFileResults))
         {
             results = std::move(multipleFileResults[fileID]);
             return true;
@@ -49,7 +48,7 @@ namespace Detection
         return false;
     }
 
-    bool FumaroleDetector::RecognizeFumaroles(const std::map<std::string, std::string> &files, std::map<std::string, std::vector<Detection::FumaroleDetection>> &results) const
+    bool FumaroleDetector::DetectFumaroles(const std::map<std::string, std::string> &files, std::map<std::string, std::vector<Detection::FumaroleDetection>> &results) const
     {
         // create new pipelines on image and run the result
         Pipeline::Pipeline p1(files);

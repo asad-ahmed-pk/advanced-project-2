@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
 #include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 namespace Pipeline
 {
@@ -70,7 +71,8 @@ namespace Pipeline
     void HeatThreshold::ThresholdImage(const cv::Mat &input, cv::Mat &output, int channel, int lower, int upper)
     {
         cv::Mat thresholdOutput;
-        cv::inRange(input, lower, upper, thresholdOutput);
+        //cv::inRange(input, lower, upper, thresholdOutput);
+        cv::threshold(input, thresholdOutput, lower, 255, cv::THRESH_TOZERO);
         cv::Vec4b channels;
 
         for (int row = 0; row < output.rows; row++)

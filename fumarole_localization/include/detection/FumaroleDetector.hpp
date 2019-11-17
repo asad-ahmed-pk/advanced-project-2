@@ -32,13 +32,13 @@ namespace Detection
         /// \param thermalImagePath The file path to the thermal image to load
         /// \param result A reference to the detection result that will be set
         /// \return Returns true on success
-        bool RecognizeFumaroles(const std::string& fileID, const std::string& thermalImagePath, std::vector<Detection::FumaroleDetection> &results) const;
+        bool DetectFumaroles(const std::string& fileID, const std::string& thermalImagePath, std::vector<Detection::FumaroleDetection> &results) const;
 
         /// Recognize all the fumaroles in the given image set and map bounding boxes for all of them
         /// \param files A map where key = the file id, and value = the file path to the thermal image
         /// \param results A reference that will be set to a map with key = file id, and value = a vector of detections for the fumaroles
         /// \return Returns true on success
-        bool RecognizeFumaroles(const std::map<std::string, std::string>& files, std::map<std::string, std::vector<FumaroleDetection>>& results) const;
+        bool DetectFumaroles(const std::map<std::string, std::string>& files, std::map<std::string, std::vector<FumaroleDetection>>& results) const;
 
         /// Save the result detection map [maps image id -> list of fumaroles] as images with the bounding boxes drawn on top
         /// \param resultMap A map with <file_id: <list of fumarole detection results>>
