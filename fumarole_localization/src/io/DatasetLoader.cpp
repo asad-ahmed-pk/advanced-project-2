@@ -77,7 +77,6 @@ namespace IO
 
                         Detection::FumaroleDetection r;
                         r.BoundingBox = std::move(cv::Rect(x, y, width, height));
-                        r.ImageID = iter->first;
 
                         groundTruth[iter->first].emplace_back(r);
                     }

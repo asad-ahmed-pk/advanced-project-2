@@ -16,7 +16,6 @@ namespace Detection
 {
     struct FumaroleDetection
     {
-        std::string ImageID;
         Model::FumaroleType Type;
         cv::Rect BoundingBox;
         std::vector<cv::Point> Contour;

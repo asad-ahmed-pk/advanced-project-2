@@ -6,6 +6,7 @@
 #include "detection/FumaroleDetector.hpp"
 #include "model/FumaroleType.hpp"
 #include "config/config.hpp"
+#include "config/ConfigParser.hpp"
 #include "io/fumarole_data_io.hpp"
 
 #include <map>
@@ -21,7 +22,8 @@ namespace Detection
     // Constructor
     FumaroleDetector::FumaroleDetector()
     {
-
+        // load min area for detection of heated area
+        m_MinAreaForHeatedArea = Config::ConfigParser::GetInstance().GetValue<float>("config.detection.min_area_heated_area");
     }
 
     // Destructor
@@ -70,25 +72,57 @@ namespace Detection
         cv::Rect rect;
         FumaroleDetection detectionResult;
 
-        // process each image result
+        // process each set of localizations for each image
         for (const auto& localization : localizations)
         {
-            // process each set of contour points for this image result
-            for (const auto& contours : localization.second)
-            {
-                // convert to rect and add to this file's list
-                rect = cv::boundingRect(contours);
-                detectionResult.ImageID = localization.first;
-                detectionResult.BoundingBox = rect;
-                detectionResult.Type = type;
-                results[localization.first].push_back(detectionResult);
-            }
+            // classify current localizations
+            results[localization.first] = std::move(ClassifyLocalizations(localization.second));
+
+            // TODO: add classifications for open vents and hidden vents
         }
 
         return std::move(results);
     }
 
-    // Save results as images
+    // Classify current localizations (holes and heated areas)
+    std::vector<FumaroleDetection> FumaroleDetector::ClassifyLocalizations(const std::vector<std::vector<cv::Point>> &contours) const
+    {
+         std::vector<FumaroleDetection> detections;
+
+         for (const auto& contour : contours)
+         {
+             FumaroleDetection detection;
+
+             detection.Type = (cv::contourArea(contour) >= m_MinAreaForHeatedArea ? Model::FumaroleType::FUMAROLE_HEATED_AREA : Model::FumaroleType::FUMAROLE_HOLE);
+             detection.BoundingBox = cv::boundingRect(contour);
+             detection.Contour = contour;
+
+             detections.emplace_back(std::move(detection));
+         }
+
+         return std::move(detections);
+    }
+
+    // Get the color for the given type
+    cv::Scalar FumaroleDetector::ColorForType(Model::FumaroleType type) const
+    {
+        switch (type)
+        {
+            case Model::FumaroleType::FUMAROLE_HOLE:
+                return cv::Scalar(10, 245, 206);
+
+            case Model::FumaroleType::FUMAROLE_HEATED_AREA:
+                return cv::Scalar(40, 80, 230);
+
+            case Model::FumaroleType::FUMAROLE_OPEN_VENT:
+                return cv::Scalar(56, 230, 25);
+
+            case Model::FumaroleType::FUMAROLE_HIDDEN:
+                return cv::Scalar(222, 114, 47);
+        }
+    }
+
+    // Save results as images with colors for different classes
     void FumaroleDetector::SaveResults(const Detection::FumaroleDetectionsPerImage &resultMap) const
     {
         // create output dir if needed
@@ -105,9 +139,11 @@ namespace Detection
             // load the original greyscale image
             IO::GetThermalImage(result.first, image, true);
 
+
+
             // draw all detected bounding boxes on this image
             for (const FumaroleDetection& r : result.second) {
-                cv::rectangle(image, r.BoundingBox, r.Type == Model::FumaroleType::FUMAROLE_OPEN_VENT ? cv::Scalar(0, 0, 255) : cv::Scalar(0, 166, 255));
+                cv::rectangle(image, r.BoundingBox, ColorForType(r.Type));
             }
 
             path = Config::FINAL_RESULTS_OUTPUT_DIR;
