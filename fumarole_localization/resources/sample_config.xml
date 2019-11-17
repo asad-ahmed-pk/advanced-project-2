@@ -8,7 +8,10 @@
             <bins>80 160 220</bins>
         </histogram>
         <contour>
-            <min_area>30</min_area>
+            <min_area>20</min_area>
         </contour>
     </pipeline>
+    <detection>
+        <min_area_heated_area>5000</min_area_heated_area>
+    </detection>
 </config>
