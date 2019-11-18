@@ -12,6 +12,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <Eigen/Eigen>
 #include <boost/filesystem.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -24,6 +25,9 @@ namespace Detection
     {
         // load min area for detection of heated area
         m_MinAreaForHeatedArea = Config::ConfigParser::GetInstance().GetValue<float>("config.detection.min_area_heated_area");
+
+        // load min clustering distance to group holes into open vents and heated areas into hidden vents
+        m_MinClusterDistance = Config::ConfigParser::GetInstance().GetValue<float>("config.detection.min_distance_for_grouping");
     }
 
     // Destructor
@@ -100,7 +104,116 @@ namespace Detection
              detections.emplace_back(std::move(detection));
          }
 
+         // add open vents
+         std::vector<FumaroleDetection> openVents = std::move(DetectOpenVents(detections));
+         detections.insert(detections.end(), openVents.begin(), openVents.end());
+
          return std::move(detections);
+    }
+
+    // Get classifications for open vents
+    std::vector<FumaroleDetection> FumaroleDetector::DetectOpenVents(const std::vector<FumaroleDetection>& detections) const
+    {
+        // get all detected holes
+        std::vector<FumaroleDetection> holeDetections;
+        std::copy_if(detections.begin(), detections.end(), std::back_inserter(holeDetections), [](const FumaroleDetection& d){ return d.Type == Model::FumaroleType::FUMAROLE_HOLE; });
+
+        // cluster all holes
+        std::vector<std::vector<FumaroleDetection>> clusters = ClusterDetections(holeDetections);
+
+        std::vector<FumaroleDetection> detectedOpenVents;
+
+        // create bounding boxes for clusters that have more than 1 hole (these are open vents)
+        std::vector<cv::Rect> boxes;
+        for (auto iter = clusters.begin(); iter != clusters.end(); iter++)
+        {
+            if (iter->size() > 1)
+            {
+                std::transform(iter->begin(), iter->end(), std::back_inserter(boxes), [](const FumaroleDetection& d) -> cv::Rect { return d.BoundingBox;} );
+
+                FumaroleDetection detection;
+                detection.Type = Model::FumaroleType ::FUMAROLE_OPEN_VENT;
+                detection.BoundingBox = EnclosingBoundingBox(boxes);
+
+                detectedOpenVents.push_back(detection);
+
+                boxes.clear();
+            }
+        }
+
+        return std::move(detectedOpenVents);
+    }
+
+    cv::Rect FumaroleDetector::EnclosingBoundingBox(const std::vector<cv::Rect> &boxes) const
+    {
+        auto minXIter = std::min_element(boxes.begin(), boxes.end(), [](const cv::Rect& r1, const cv::Rect& r2){ return r1.x < r2.x; });
+        auto minYIter = std::min_element(boxes.begin(), boxes.end(), [](const cv::Rect& r1, const cv::Rect& r2){ return r1.y < r2.y; });
+        auto maxXIter = std::max_element(boxes.begin(), boxes.end(), [](const cv::Rect& r1, const cv::Rect& r2){ return (r1.x + r1.width) < (r2.x + r2.width); });
+        auto maxYIter = std::max_element(boxes.begin(), boxes.end(), [](const cv::Rect& r1, const cv::Rect& r2){ return (r1.y + r1.height) < (r2.y + r2.height); });
+
+        float x = minXIter->x;
+        float y = minYIter->y;
+        float width = maxXIter->width - x;
+        float height = maxYIter->height - y;
+
+        return std::move(cv::Rect(x, y, width, height));
+    }
+
+    // Cluster detections into clusters based on l2 distance between centroids of bounding boxes
+    std::vector<std::vector<FumaroleDetection>> FumaroleDetector::ClusterDetections(const std::vector<FumaroleDetection> &detections) const
+    {
+        std::vector<FumaroleDetection> unclusteredDetections = detections;
+        std::vector<std::vector<FumaroleDetection>> clusteredDetections;
+
+        std::vector<FumaroleDetection>::iterator iter;
+
+        cv::Rect clusteringBoundingBox;
+
+        while(!unclusteredDetections.empty())
+        {
+            iter = unclusteredDetections.begin();
+            clusteringBoundingBox = std::move(BoundingBoxForCluster(*iter));
+
+            clusteredDetections.emplace_back();
+            clusteredDetections[clusteredDetections.size() - 1].push_back(*iter);
+            iter = unclusteredDetections.erase(iter);
+
+            // run to end and add all remaining points that belong to this cluster bounding box
+            while (iter != unclusteredDetections.end())
+            {
+                // get centroid of rect and see if inside bounding box
+                cv::Point2f center = cv::Point2f(iter->BoundingBox.x + iter->BoundingBox.width / 2.0, iter->BoundingBox.y + iter->BoundingBox.height / 2.0);
+                if (clusteringBoundingBox.contains(center)) {
+                    clusteredDetections[clusteredDetections.size() - 1].push_back(*iter);
+                    iter = unclusteredDetections.erase(iter);
+                }
+                else {
+                    iter++;
+                }
+            }
+        }
+
+        return std::move(clusteredDetections);
+    }
+
+    // Get the bounding box that is to be used for clustering
+    cv::Rect FumaroleDetector::BoundingBoxForCluster(const Detection::FumaroleDetection &d) const
+    {
+        cv::Rect b;
+
+        // get centroid of bounding box
+        cv::Point2f center(d.BoundingBox.x + d.BoundingBox.width / 2.0, d.BoundingBox.y + d.BoundingBox.height / 2.0);
+
+        // create another bounding box with this as center
+        b.x = center.x - m_MinClusterDistance;
+        if (b.x < 0) b.x = 0;
+        b.width = 2 * m_MinClusterDistance;
+
+        b.y = center.y - m_MinClusterDistance;
+        if (b.y < 0) b.y = 0;
+        b.height = 2 * m_MinClusterDistance;
+
+        return std::move(b);
     }
 
     // Get the color for the given type
@@ -138,8 +251,6 @@ namespace Detection
         {
             // load the original greyscale image
             IO::GetThermalImage(result.first, image, true);
-
-
 
             // draw all detected bounding boxes on this image
             for (const FumaroleDetection& r : result.second) {

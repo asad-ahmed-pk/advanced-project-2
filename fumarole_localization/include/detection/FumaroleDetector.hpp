@@ -47,12 +47,16 @@ namespace Detection
     private:
         std::map<std::string, std::vector<FumaroleDetection>> ConvertLocalizations(const Pipeline::PipelineLocalizations& localizations, Model::FumaroleType type) const;
         std::vector<FumaroleDetection> ClassifyLocalizations(const std::vector<std::vector<cv::Point>>& contours) const;
-        std::vector<FumaroleDetection> DetectOpenVents(const std::vector<std::vector<cv::Point>>& contours) const;
-        std::vector<FumaroleDetection> DetectHiddenVents(const std::vector<std::vector<cv::Point>>& contours) const;
+        std::vector<FumaroleDetection> DetectOpenVents(const std::vector<FumaroleDetection>& detections) const;
+        std::vector<FumaroleDetection> DetectHiddenVents(const std::vector<FumaroleDetection>& detections) const;
+        std::vector<std::vector<FumaroleDetection>> ClusterDetections(const std::vector<FumaroleDetection>& detections) const;
         cv::Scalar ColorForType(Model::FumaroleType type) const;
+        cv::Rect BoundingBoxForCluster(const FumaroleDetection& d) const;
+        cv::Rect EnclosingBoundingBox(const std::vector<cv::Rect>& boxes) const;
 
     private:
         float m_MinAreaForHeatedArea;
+        float m_MinClusterDistance;
     };
 }
 

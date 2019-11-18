@@ -39,6 +39,7 @@ list(APPEND OTHER_SOURCES
         src/detection/FumaroleDetector.cpp
         src/evaluation/AlgorithmEvaluator.cpp
         src/model/FumaroleType.cpp
+        src/utils/EigenUtils.cpp
 )
 
 # Executables
