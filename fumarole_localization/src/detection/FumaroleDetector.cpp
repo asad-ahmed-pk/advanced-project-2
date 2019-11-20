@@ -18,8 +18,12 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include <opencv2/flann/flann.hpp>
+
 namespace Detection
 {
+    const int FUMAROLE_HOLE_RADIUS { 5 };
+
     // Constructor
     FumaroleDetector::FumaroleDetector()
     {
@@ -77,12 +81,9 @@ namespace Detection
         FumaroleDetection detectionResult;
 
         // process each set of localizations for each image
-        for (const auto& localization : localizations)
-        {
+        for (const auto& localization : localizations) {
             // classify current localizations
             results[localization.first] = std::move(ClassifyLocalizations(localization.second));
-
-            // TODO: add classifications for open vents and hidden vents
         }
 
         return std::move(results);
@@ -138,12 +139,16 @@ namespace Detection
                 detectedOpenVents.push_back(detection);
 
                 boxes.clear();
+
+                // TODO: Remove this after done debugging
+                break;
             }
         }
 
         return std::move(detectedOpenVents);
     }
 
+    // Get enclosing bounding box that encloses all the given bounding boxes
     cv::Rect FumaroleDetector::EnclosingBoundingBox(const std::vector<cv::Rect> &boxes) const
     {
         auto minXIter = std::min_element(boxes.begin(), boxes.end(), [](const cv::Rect& r1, const cv::Rect& r2){ return r1.x < r2.x; });
@@ -153,8 +158,8 @@ namespace Detection
 
         float x = minXIter->x;
         float y = minYIter->y;
-        float width = maxXIter->width - x;
-        float height = maxYIter->height - y;
+        float width = maxXIter->x - x;
+        float height = maxYIter->y - y;
 
         return std::move(cv::Rect(x, y, width, height));
     }
@@ -202,7 +207,7 @@ namespace Detection
         cv::Rect b;
 
         // get centroid of bounding box
-        cv::Point2f center(d.BoundingBox.x + d.BoundingBox.width / 2.0, d.BoundingBox.y + d.BoundingBox.height / 2.0);
+        cv::Point2f center = d.Center();
 
         // create another bounding box with this as center
         b.x = center.x - m_MinClusterDistance;
@@ -213,7 +218,8 @@ namespace Detection
         if (b.y < 0) b.y = 0;
         b.height = 2 * m_MinClusterDistance;
 
-        return std::move(b);
+        cv::Rect b2 = d.BoundingBox;
+        return std::move(b2);
     }
 
     // Get the color for the given type
@@ -228,7 +234,7 @@ namespace Detection
                 return cv::Scalar(40, 80, 230);
 
             case Model::FumaroleType::FUMAROLE_OPEN_VENT:
-                return cv::Scalar(56, 230, 25);
+                return cv::Scalar(255, 0, 0);
 
             case Model::FumaroleType::FUMAROLE_HIDDEN:
                 return cv::Scalar(222, 114, 47);
@@ -252,9 +258,15 @@ namespace Detection
             // load the original greyscale image
             IO::GetThermalImage(result.first, image, true);
 
-            // draw all detected bounding boxes on this image
-            for (const FumaroleDetection& r : result.second) {
-                cv::rectangle(image, r.BoundingBox, ColorForType(r.Type));
+            // draw graphics for the different types of vents
+            for (const FumaroleDetection& r : result.second)
+            {
+                if (r.Type == Model::FumaroleType::FUMAROLE_HOLE) {
+                    cv::circle(image, r.Center(), FUMAROLE_HOLE_RADIUS, ColorForType(r.Type));
+                }
+                else {
+                    cv::rectangle(image, r.BoundingBox, ColorForType(r.Type));
+                }
             }
 
             path = Config::FINAL_RESULTS_OUTPUT_DIR;

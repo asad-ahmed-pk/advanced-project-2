@@ -10,6 +10,7 @@
 #include <vector>
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
 
 const std::string FOLDER { "test_set_2/" };
 

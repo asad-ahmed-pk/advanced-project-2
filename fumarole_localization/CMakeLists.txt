@@ -5,6 +5,11 @@ cmake_minimum_required(VERSION 3.10)
 project(fumarole_localization)
 set(CMAKE_CXX_STANDARD 17)
 
+# Mac OSX Check
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(MACOSX TRUE)
+endif()
+
 # OpenCV
 find_package(OpenCV 4.1 REQUIRED)
 
@@ -13,7 +18,7 @@ find_package(Boost 1.60 COMPONENTS filesystem REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 
 # Eigen3
-find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 # Includes
 include_directories(include)

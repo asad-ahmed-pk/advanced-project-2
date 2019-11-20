@@ -19,6 +19,10 @@ namespace Detection
         Model::FumaroleType Type;
         cv::Rect BoundingBox;
         std::vector<cv::Point> Contour;
+
+        [[nodiscard]] cv::Point2f Center() const {
+            return std::move(cv::Point2f{static_cast<float>(BoundingBox.x + BoundingBox.width / 2.0), static_cast<float>(BoundingBox.y + BoundingBox.height / 2.0)});
+        }
     };
 }
 
