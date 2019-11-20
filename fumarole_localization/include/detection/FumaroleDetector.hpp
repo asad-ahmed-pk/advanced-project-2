@@ -49,14 +49,15 @@ namespace Detection
         std::vector<FumaroleDetection> ClassifyLocalizations(const std::vector<std::vector<cv::Point>>& contours) const;
         std::vector<FumaroleDetection> DetectOpenVents(const std::vector<FumaroleDetection>& detections) const;
         std::vector<FumaroleDetection> DetectHiddenVents(const std::vector<FumaroleDetection>& detections) const;
-        std::vector<std::vector<FumaroleDetection>> ClusterDetections(const std::vector<FumaroleDetection>& detections) const;
         cv::Scalar ColorForType(Model::FumaroleType type) const;
-        cv::Rect BoundingBoxForCluster(const FumaroleDetection& d) const;
         cv::Rect EnclosingBoundingBox(const std::vector<cv::Rect>& boxes) const;
+        void RadiusSearch(const std::vector<cv::Point2f>& centroids, std::map<int, std::vector<int>>& matchedIndices, float radius) const;
 
     private:
         float m_MinAreaForHeatedArea;
         float m_MinClusterDistance;
+        float m_OpenVentSearchRadius;
+        float m_HiddenVentSearchRadius;
     };
 }
 

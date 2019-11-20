@@ -12,13 +12,11 @@
 #include <map>
 #include <string>
 #include <algorithm>
-#include <Eigen/Eigen>
 #include <boost/filesystem.hpp>
+#include <opencv2/flann/flann.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-
-#include <opencv2/flann/flann.hpp>
 
 namespace Detection
 {
@@ -27,11 +25,11 @@ namespace Detection
     // Constructor
     FumaroleDetector::FumaroleDetector()
     {
-        // load min area for detection of heated area
+        // load params from config file
         m_MinAreaForHeatedArea = Config::ConfigParser::GetInstance().GetValue<float>("config.detection.min_area_heated_area");
-
-        // load min clustering distance to group holes into open vents and heated areas into hidden vents
         m_MinClusterDistance = Config::ConfigParser::GetInstance().GetValue<float>("config.detection.min_distance_for_grouping");
+        m_OpenVentSearchRadius = Config::ConfigParser::GetInstance().GetValue<float>("config.detection.open_vent_radius_search");
+        m_HiddenVentSearchRadius = Config::ConfigParser::GetInstance().GetValue<float>("config.detection.hidden_area_radius_search");
     }
 
     // Destructor
@@ -64,7 +62,8 @@ namespace Detection
         Pipeline::Pipeline pipeline(files);
 
         // run pipeline
-        if (pipeline.Run()) {
+        if (pipeline.Run())
+        {
             // convert localizations of pipelines into results
             results = std::move(ConvertLocalizations(pipeline.GetLocalizations(), Model::FumaroleType::FUMAROLE_OPEN_VENT));
             return true;
@@ -115,37 +114,93 @@ namespace Detection
     // Get classifications for open vents
     std::vector<FumaroleDetection> FumaroleDetector::DetectOpenVents(const std::vector<FumaroleDetection>& detections) const
     {
-        // get all detected holes
+        // get all detected holes as a vector of centroids
         std::vector<FumaroleDetection> holeDetections;
-        std::copy_if(detections.begin(), detections.end(), std::back_inserter(holeDetections), [](const FumaroleDetection& d){ return d.Type == Model::FumaroleType::FUMAROLE_HOLE; });
+        std::vector<cv::Point2f> centroids;
 
-        // cluster all holes
-        std::vector<std::vector<FumaroleDetection>> clusters = ClusterDetections(holeDetections);
+        std::copy_if(detections.begin(), detections.end(), std::back_inserter(holeDetections), [](const FumaroleDetection& d){ return d.Type == Model::FumaroleType::FUMAROLE_HOLE; });
+        std::transform(holeDetections.begin(), holeDetections.end(), std::back_inserter(centroids), [](const FumaroleDetection& d) -> cv::Point2f {
+           return d.Center();
+        });
 
         std::vector<FumaroleDetection> detectedOpenVents;
 
-        // create bounding boxes for clusters that have more than 1 hole (these are open vents)
-        std::vector<cv::Rect> boxes;
-        for (auto iter = clusters.begin(); iter != clusters.end(); iter++)
-        {
-            if (iter->size() > 1)
-            {
-                std::transform(iter->begin(), iter->end(), std::back_inserter(boxes), [](const FumaroleDetection& d) -> cv::Rect { return d.BoundingBox;} );
+        // get index graph of radius search (flann)
+        std::map<int, std::vector<int>> matchedIndices;
+        RadiusSearch(centroids, matchedIndices, m_OpenVentSearchRadius);
 
+        // cluster into open vents
+        std::vector<bool> used(holeDetections.size(), false);
+        std::vector<cv::Rect> boxes;
+
+        for (auto iter = matchedIndices.begin(); iter != matchedIndices.end(); iter++)
+        {
+            for (int index : iter->second)
+            {
+                if (!used[index]) {
+                    // get all bounding boxes from the hole detections with these indices
+                    boxes.push_back(holeDetections[index].BoundingBox);
+                    used[index] = true;
+                }
+            }
+
+            if (boxes.size() > 1)
+            {
+                // build main open-vent detection that encloses these boxes
                 FumaroleDetection detection;
-                detection.Type = Model::FumaroleType ::FUMAROLE_OPEN_VENT;
+                detection.Type = Model::FumaroleType::FUMAROLE_OPEN_VENT;
                 detection.BoundingBox = EnclosingBoundingBox(boxes);
 
                 detectedOpenVents.push_back(detection);
-
-                boxes.clear();
-
-                // TODO: Remove this after done debugging
-                break;
             }
+
+            boxes.clear();
         }
 
         return std::move(detectedOpenVents);
+    }
+
+    // Radius search for each point
+    void FumaroleDetector::RadiusSearch(const std::vector<cv::Point2f> &centroids,
+                                        std::map<int, std::vector<int>> &matchedIndices, float radius) const
+    {
+        // pack centroids into matrix
+        cv::Mat_<float> points(0, 2);
+        for (const auto& p : centroids) {
+            cv::Mat row = (cv::Mat_<float>(1, 2) << p.x, p.y);
+            points.push_back(row);
+        }
+
+        // perform nearest neighbour lookup from centroids
+        cv::flann::KDTreeIndexParams params(1);
+        cv::flann::Index kdtree(points, params);
+        std::vector<float> queryPoint(2, 0);
+        std::vector<int> indices;
+        std::vector<float> distances;
+
+        for (int i = 0; i < centroids.size(); i++)
+        {
+            // kdtree NN lookup
+            queryPoint[0] = centroids[i].x;
+            queryPoint[1] = centroids[i].y;
+            kdtree.radiusSearch(queryPoint, indices, distances, radius, 10);
+
+            // map all matched indices for this point
+            if (!indices.empty())
+            {
+                for (int j = 0; j < indices.size(); j++)
+                {
+                    int index = indices[j];
+                    if (index == i || distances[j] == 0) {
+                        continue;
+                    }
+                    matchedIndices[i].push_back(index);
+                }
+            }
+
+            indices.clear();
+            distances.clear();
+        }
     }
 
     // Get enclosing bounding box that encloses all the given bounding boxes
@@ -156,70 +211,12 @@ namespace Detection
         auto maxXIter = std::max_element(boxes.begin(), boxes.end(), [](const cv::Rect& r1, const cv::Rect& r2){ return (r1.x + r1.width) < (r2.x + r2.width); });
         auto maxYIter = std::max_element(boxes.begin(), boxes.end(), [](const cv::Rect& r1, const cv::Rect& r2){ return (r1.y + r1.height) < (r2.y + r2.height); });
 
-        float x = minXIter->x;
-        float y = minYIter->y;
-        float width = maxXIter->x - x;
-        float height = maxYIter->y - y;
+        int x = minXIter->x - FUMAROLE_HOLE_RADIUS;
+        int y = minYIter->y - FUMAROLE_HOLE_RADIUS;
+        int width = maxXIter->x + maxXIter->width - x + FUMAROLE_HOLE_RADIUS;
+        int height = maxYIter->y + maxYIter->height - y + FUMAROLE_HOLE_RADIUS;
 
-        return std::move(cv::Rect(x, y, width, height));
-    }
-
-    // Cluster detections into clusters based on l2 distance between centroids of bounding boxes
-    std::vector<std::vector<FumaroleDetection>> FumaroleDetector::ClusterDetections(const std::vector<FumaroleDetection> &detections) const
-    {
-        std::vector<FumaroleDetection> unclusteredDetections = detections;
-        std::vector<std::vector<FumaroleDetection>> clusteredDetections;
-
-        std::vector<FumaroleDetection>::iterator iter;
-
-        cv::Rect clusteringBoundingBox;
-
-        while(!unclusteredDetections.empty())
-        {
-            iter = unclusteredDetections.begin();
-            clusteringBoundingBox = std::move(BoundingBoxForCluster(*iter));
-
-            clusteredDetections.emplace_back();
-            clusteredDetections[clusteredDetections.size() - 1].push_back(*iter);
-            iter = unclusteredDetections.erase(iter);
-
-            // run to end and add all remaining points that belong to this cluster bounding box
-            while (iter != unclusteredDetections.end())
-            {
-                // get centroid of rect and see if inside bounding box
-                cv::Point2f center = cv::Point2f(iter->BoundingBox.x + iter->BoundingBox.width / 2.0, iter->BoundingBox.y + iter->BoundingBox.height / 2.0);
-                if (clusteringBoundingBox.contains(center)) {
-                    clusteredDetections[clusteredDetections.size() - 1].push_back(*iter);
-                    iter = unclusteredDetections.erase(iter);
-                }
-                else {
-                    iter++;
-                }
-            }
-        }
-
-        return std::move(clusteredDetections);
-    }
-
-    // Get the bounding box that is to be used for clustering
-    cv::Rect FumaroleDetector::BoundingBoxForCluster(const Detection::FumaroleDetection &d) const
-    {
-        cv::Rect b;
-
-        // get centroid of bounding box
-        cv::Point2f center = d.Center();
-
-        // create another bounding box with this as center
-        b.x = center.x - m_MinClusterDistance;
-        if (b.x < 0) b.x = 0;
-        b.width = 2 * m_MinClusterDistance;
-
-        b.y = center.y - m_MinClusterDistance;
-        if (b.y < 0) b.y = 0;
-        b.height = 2 * m_MinClusterDistance;
-
-        cv::Rect b2 = d.BoundingBox;
-        return std::move(b2);
+        return cv::Rect(x, y, width, height);
     }
 
     // Get the color for the given type

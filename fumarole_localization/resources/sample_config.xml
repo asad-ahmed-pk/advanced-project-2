@@ -13,5 +13,8 @@
     </pipeline>
     <detection>
         <min_area_heated_area>5000</min_area_heated_area>
+        <min_distance_for_grouping>50</min_distance_for_grouping>
+        <open_vent_radius_search>1200</open_vent_radius_search>
+        <hidden_area_radius_search>500</hidden_area_radius_search>
     </detection>
 </config>
