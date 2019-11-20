@@ -107,29 +107,51 @@ namespace Detection
          std::vector<FumaroleDetection> openVents = std::move(DetectOpenVents(detections));
          detections.insert(detections.end(), openVents.begin(), openVents.end());
 
+         // add hidden vents
+         std::vector<FumaroleDetection> hiddenVents = std::move(DetectHiddenVents(detections));
+         detections.insert(detections.end(), hiddenVents.begin(), hiddenVents.end());
+
          return std::move(detections);
     }
 
     // Get classifications for open vents
     std::vector<FumaroleDetection> FumaroleDetector::DetectOpenVents(const std::vector<FumaroleDetection>& detections) const
     {
-        // get all detected holes as a vector of centroids
-        std::vector<FumaroleDetection> holeDetections;
+        // get all detected holes and cluster them into open vents
+        std::vector<FumaroleDetection> holes;
+        std::copy_if(detections.begin(), detections.end(), std::back_inserter(holes), [](const FumaroleDetection& d){ return d.Type == Model::FumaroleType::FUMAROLE_HOLE; });
+        return std::move(ClusterDetections(holes, m_OpenVentSearchRadius, Model::FumaroleType::FUMAROLE_OPEN_VENT));
+    }
+
+    std::vector<FumaroleDetection> FumaroleDetector::DetectHiddenVents(const std::vector<FumaroleDetection> &detections) const
+    {
+        // get all detected heatead areas and cluster them into hidden vents
+        std::vector<FumaroleDetection> heatedAreas;
+        std::copy_if(detections.begin(), detections.end(), std::back_inserter(heatedAreas), [](const FumaroleDetection& d){ return d.Type == Model::FumaroleType::FUMAROLE_HEATED_AREA; });
+        return std::move(ClusterDetections(heatedAreas, m_HiddenVentSearchRadius, Model::FumaroleType::FUMAROLE_HIDDEN));
+    }
+
+    // Cluster the given detections based on a radius search
+    std::vector<FumaroleDetection> FumaroleDetector::ClusterDetections(const std::vector<FumaroleDetection>& detections, float radius, Model::FumaroleType type) const
+    {
+        std::vector<FumaroleDetection> clusteredDetections;
+
+        if (detections.empty()) {
+            return clusteredDetections;
+        }
+
+        // convert to vector of centroids
         std::vector<cv::Point2f> centroids;
-
-        std::copy_if(detections.begin(), detections.end(), std::back_inserter(holeDetections), [](const FumaroleDetection& d){ return d.Type == Model::FumaroleType::FUMAROLE_HOLE; });
-        std::transform(holeDetections.begin(), holeDetections.end(), std::back_inserter(centroids), [](const FumaroleDetection& d) -> cv::Point2f {
-           return d.Center();
+        std::transform(detections.begin(), detections.end(), std::back_inserter(centroids), [](const FumaroleDetection& d) -> cv::Point2f {
+            return d.Center();
         });
-
-        std::vector<FumaroleDetection> detectedOpenVents;
 
         // get index graph of radius search (flann)
         std::map<int, std::vector<int>> matchedIndices;
-        RadiusSearch(centroids, matchedIndices, m_OpenVentSearchRadius);
+        RadiusSearch(centroids, matchedIndices, radius);
 
         // cluster into open vents
-        std::vector<bool> used(holeDetections.size(), false);
+        std::vector<bool> used(detections.size(), false);
         std::vector<cv::Rect> boxes;
 
         for (auto iter = matchedIndices.begin(); iter != matchedIndices.end(); iter++)
@@ -137,8 +159,8 @@ namespace Detection
             for (int index : iter->second)
             {
                 if (!used[index]) {
-                    // get all bounding boxes from the hole detections with these indices
-                    boxes.push_back(holeDetections[index].BoundingBox);
+                    // get all bounding boxes from the detections with these indices
+                    boxes.push_back(detections[index].BoundingBox);
                     used[index] = true;
                 }
             }
@@ -147,16 +169,16 @@ namespace Detection
             {
                 // build main open-vent detection that encloses these boxes
                 FumaroleDetection detection;
-                detection.Type = Model::FumaroleType::FUMAROLE_OPEN_VENT;
+                detection.Type = type;
                 detection.BoundingBox = EnclosingBoundingBox(boxes);
 
-                detectedOpenVents.push_back(detection);
+                clusteredDetections.push_back(detection);
             }
 
             boxes.clear();
         }
 
-        return std::move(detectedOpenVents);
+        return std::move(clusteredDetections);
     }
 
     // Radius search for each point
