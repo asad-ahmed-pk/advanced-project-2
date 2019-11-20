@@ -27,7 +27,6 @@ namespace Detection
     {
         // load params from config file
         m_MinAreaForHeatedArea = Config::ConfigParser::GetInstance().GetValue<float>("config.detection.min_area_heated_area");
-        m_MinClusterDistance = Config::ConfigParser::GetInstance().GetValue<float>("config.detection.min_distance_for_grouping");
         m_OpenVentSearchRadius = Config::ConfigParser::GetInstance().GetValue<float>("config.detection.open_vent_radius_search");
         m_HiddenVentSearchRadius = Config::ConfigParser::GetInstance().GetValue<float>("config.detection.hidden_area_radius_search");
     }

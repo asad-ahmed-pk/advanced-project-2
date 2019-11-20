@@ -55,7 +55,6 @@ namespace Detection
 
     private:
         float m_MinAreaForHeatedArea;
-        float m_MinClusterDistance;
         float m_OpenVentSearchRadius;
         float m_HiddenVentSearchRadius;
     };
