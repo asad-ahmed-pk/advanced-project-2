@@ -1,15 +1,12 @@
 // main.cpp
 // Main executable
 
+#include "detection/FumaroleDetector.hpp"
+#include "detection/FumaroleDetection.hpp"
+
 #include <string>
 #include <iostream>
 #include <map>
-#include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
-
-#include "model/FumaroleType.hpp"
-#include "pipeline/Pipeline.hpp"
-#include "io/fumarole_data_io.hpp"
 
 int main(int argc, char** argv)
 {
@@ -21,13 +18,16 @@ int main(int argc, char** argv)
             { "001862580000", "../../../Data/0009/CamThermal/CamThermal_001862580000.exr" },
             { "001944180000", "../../../Data/0009/CamThermal/CamThermal_001944180000.exr" }
     };
-    //IO::GetGreyscaleHeatMaps(files);
 
-    // construct pipeline
-    std::cout << "\n\nRunning pipeline" << std::endl;
+    // detector results
+    std::map<std::string, std::vector<Detection::FumaroleDetection>> results;
 
-    Pipeline::Pipeline pipeline(files);
-    pipeline.Run();
+    // create and run detector
+    Detection::FumaroleDetector detector;
+    detector.DetectFumaroles(files, results);
+
+    // save results to disk
+    detector.SaveResults(results);
 
     std::cout << "\nDone" << std::endl;
 

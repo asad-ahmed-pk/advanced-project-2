@@ -240,6 +240,15 @@ namespace Detection
         return cv::Rect(x, y, width, height);
     }
 
+    // Remove overlapping detections
+    void FumaroleDetector::RemoveOverlappingDetections(std::vector<FumaroleDetection> &detections) const
+    {
+        for (auto iterOuter = detections.begin(); iterOuter != detections.end(); iterOuter++)
+        {
+            // TODO: find the overlapping detections and remove them
+        }
+    }
+
     // Get the color for the given type
     cv::Scalar FumaroleDetector::ColorForType(Model::FumaroleType type) const
     {

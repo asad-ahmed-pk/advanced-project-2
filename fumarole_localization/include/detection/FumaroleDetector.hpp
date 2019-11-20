@@ -46,12 +46,16 @@ namespace Detection
 
     private:
         std::map<std::string, std::vector<FumaroleDetection>> ConvertLocalizations(const Pipeline::PipelineLocalizations& localizations, Model::FumaroleType type) const;
+
         std::vector<FumaroleDetection> ClassifyLocalizations(const std::vector<std::vector<cv::Point>>& contours) const;
         std::vector<FumaroleDetection> DetectOpenVents(const std::vector<FumaroleDetection>& detections) const;
         std::vector<FumaroleDetection> DetectHiddenVents(const std::vector<FumaroleDetection>& detections) const;
         std::vector<FumaroleDetection> ClusterDetections(const std::vector<FumaroleDetection>& detections, float radius, Model::FumaroleType type) const;
+
         cv::Scalar ColorForType(Model::FumaroleType type) const;
         cv::Rect EnclosingBoundingBox(const std::vector<cv::Rect>& boxes) const;
+
+        void RemoveOverlappingDetections(std::vector<FumaroleDetection>& detections) const;
         void RadiusSearch(const std::vector<cv::Point2f>& centroids, std::map<int, std::vector<int>>& matchedIndices, float radius) const;
 
     private:
