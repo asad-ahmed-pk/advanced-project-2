@@ -83,7 +83,9 @@ namespace Pipeline
         for (const std::vector<std::vector<cv::Point>>& contoursForThermalRange : contours)
         {
             cv::Mat output;
-            IO::GetThermalImage(filename, output, true);
+
+            IO::GetFullResCamImage(filename, output);
+            //IO::GetThermalImage(filename, output, true);
 
             if (!contoursForThermalRange.empty()) {
                 cv::drawContours(output, contoursForThermalRange, -1, cv::Scalar(0, 0, 255));

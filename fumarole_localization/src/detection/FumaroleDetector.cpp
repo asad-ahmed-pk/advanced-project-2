@@ -21,6 +21,7 @@
 namespace Detection
 {
     const int FUMAROLE_HOLE_RADIUS { 5 };
+    const int DRAW_THICKNESS { 3 };
 
     // Constructor
     FumaroleDetector::FumaroleDetector()
@@ -283,16 +284,19 @@ namespace Detection
         for (const auto& result : resultMap)
         {
             // load the original greyscale image
-            IO::GetThermalImage(result.first, image, true);
+            //IO::GetThermalImage(result.first, image, true);
+
+            // load full-scale image
+            IO::GetFullResCamImage(result.first, image);
 
             // draw graphics for the different types of vents
             for (const FumaroleDetection& r : result.second)
             {
                 if (r.Type == Model::FumaroleType::FUMAROLE_HOLE) {
-                    cv::circle(image, r.Center(), FUMAROLE_HOLE_RADIUS, ColorForType(r.Type));
+                    cv::circle(image, r.Center(), FUMAROLE_HOLE_RADIUS, ColorForType(r.Type), DRAW_THICKNESS);
                 }
                 else {
-                    cv::rectangle(image, r.BoundingBox, ColorForType(r.Type));
+                    cv::rectangle(image, r.BoundingBox, ColorForType(r.Type), DRAW_THICKNESS);
                 }
             }
 

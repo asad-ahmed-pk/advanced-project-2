@@ -41,7 +41,8 @@ namespace Pipeline
         }
 
         // draw the final contours onto the image
-        IO::GetThermalImage(filename, output, true);
+        //IO::GetThermalImage(filename, output, true);
+        IO::GetFullResCamImage(filename, output);
         if (!contoursForImage.empty()) {
             cv::drawContours(output, contoursForImage, -1, cv::Scalar(0, 0, 255), 2);
         }
