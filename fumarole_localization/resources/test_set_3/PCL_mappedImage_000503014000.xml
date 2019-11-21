@@ -1,0 +1,38 @@
+<annotation>
+	<folder>thermal</folder>
+	<filename>PCL_mappedImage_000503014000.bmp</filename>
+	<path>/Users/asad/Documents/_Jacobs University/_Study/Semester 3/Advanced Project II/advanced-project-2/fumarole_localization/data/thermal/PCL_mappedImage_000503014000.bmp</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>1360</width>
+		<height>1024</height>
+		<depth>1</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>open_vent</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>722</xmin>
+			<ymin>422</ymin>
+			<xmax>888</xmax>
+			<ymax>551</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>open_vent</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>798</xmin>
+			<ymin>509</ymin>
+			<xmax>1027</xmax>
+			<ymax>789</ymax>
+		</bndbox>
+	</object>
+</annotation>
