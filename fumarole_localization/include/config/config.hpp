@@ -14,7 +14,7 @@ namespace Config
     const std::string PIPELINE_OUTPUT_DIR { "pipeline_output/"};
     const std::string IMAGE_OUTPUT_EXT { ".png" };
 
-    const std::string THERMAL_IMAGE_PREFIX { "" };
+    const std::string THERMAL_IMAGE_PREFIX { "PCL_mappedImage_" };
     const std::string THERMAL_IMAGE_FILE_EXT { ".bmp" };
     const std::string THERMAL_IMAGES_DIR {"../data/thermal/"};
 
