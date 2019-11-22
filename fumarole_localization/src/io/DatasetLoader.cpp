@@ -52,6 +52,7 @@ namespace IO
 
         int x = 0, y = 0;
         int width = 0, height = 0;
+        std::string classString;
         std::string filePath;
 
         for (std::map<std::string, std::string>::const_iterator iter = testFiles.begin(); iter != testFiles.end(); iter++)
@@ -78,10 +79,33 @@ namespace IO
                         Detection::FumaroleDetection r;
                         r.BoundingBox = std::move(cv::Rect(x, y, width, height));
 
+                        classString = child.second.get<std::string>("name");
+                        r.Type = GetType(classString);
+
                         groundTruth[iter->first].emplace_back(r);
                     }
                 }
             }
+        }
+    }
+
+    // Get type enum from the class string id
+    Model::FumaroleType DatasetLoader::GetType(const std::string& classString)
+    {
+        if (classString == "hole") {
+            return Model::FumaroleType::FUMAROLE_HOLE;
+        }
+        else if (classString == "open_vent") {
+            return Model::FumaroleType::FUMAROLE_OPEN_VENT;
+        }
+        else if (classString == "hidden_vent") {
+            return Model::FumaroleType::FUMAROLE_HIDDEN_VENT;
+        }
+        else if (classString == "heated_area") {
+            return Model::FumaroleType::FUMAROLE_HEATED_AREA;
+        }
+        else {
+            return Model::FumaroleType::UNKNOWN;
         }
     }
 }

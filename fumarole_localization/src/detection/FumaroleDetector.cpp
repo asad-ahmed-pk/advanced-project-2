@@ -129,7 +129,7 @@ namespace Detection
         // get all detected heatead areas and cluster them into hidden vents
         std::vector<FumaroleDetection> heatedAreas;
         std::copy_if(detections.begin(), detections.end(), std::back_inserter(heatedAreas), [](const FumaroleDetection& d){ return d.Type == Model::FumaroleType::FUMAROLE_HEATED_AREA; });
-        return std::move(ClusterDetections(heatedAreas, m_HiddenVentSearchRadius, Model::FumaroleType::FUMAROLE_HIDDEN));
+        return std::move(ClusterDetections(heatedAreas, m_HiddenVentSearchRadius, Model::FumaroleType::FUMAROLE_HIDDEN_VENT));
     }
 
     // Cluster the given detections based on a radius search
@@ -264,8 +264,11 @@ namespace Detection
             case Model::FumaroleType::FUMAROLE_OPEN_VENT:
                 return cv::Scalar(255, 0, 0);
 
-            case Model::FumaroleType::FUMAROLE_HIDDEN:
+            case Model::FumaroleType::FUMAROLE_HIDDEN_VENT:
                 return cv::Scalar(222, 114, 47);
+
+            case Model::FumaroleType::UNKNOWN:
+                return cv::Scalar(0, 0, 0);
         }
     }
 

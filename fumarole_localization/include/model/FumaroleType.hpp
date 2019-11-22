@@ -13,8 +13,9 @@ namespace Model
     enum FumaroleType {
         FUMAROLE_HOLE,
         FUMAROLE_OPEN_VENT,
-        FUMAROLE_HIDDEN,
-        FUMAROLE_HEATED_AREA
+        FUMAROLE_HIDDEN_VENT,
+        FUMAROLE_HEATED_AREA,
+        UNKNOWN
     };
 
     // Convert enum type to string
