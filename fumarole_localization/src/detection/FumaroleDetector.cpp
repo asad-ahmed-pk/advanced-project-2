@@ -126,7 +126,7 @@ namespace Detection
 
     std::vector<FumaroleDetection> FumaroleDetector::DetectHiddenVents(const std::vector<FumaroleDetection> &detections) const
     {
-        // get all detected heatead areas and cluster them into hidden vents
+        // get all detected heated areas and cluster them into hidden vents
         std::vector<FumaroleDetection> heatedAreas;
         std::copy_if(detections.begin(), detections.end(), std::back_inserter(heatedAreas), [](const FumaroleDetection& d){ return d.Type == Model::FumaroleType::FUMAROLE_HEATED_AREA; });
         return std::move(ClusterDetections(heatedAreas, m_HiddenVentSearchRadius, Model::FumaroleType::FUMAROLE_HIDDEN_VENT));
@@ -157,6 +157,8 @@ namespace Detection
 
         for (auto iter = matchedIndices.begin(); iter != matchedIndices.end(); iter++)
         {
+            used[iter->first] = true;
+
             for (int index : iter->second)
             {
                 if (!used[index]) {
@@ -239,15 +241,6 @@ namespace Detection
         int height = maxYIter->y + maxYIter->height - y + FUMAROLE_HOLE_RADIUS;
 
         return cv::Rect(x, y, width, height);
-    }
-
-    // Remove overlapping detections
-    void FumaroleDetector::RemoveOverlappingDetections(std::vector<FumaroleDetection> &detections) const
-    {
-        for (auto iterOuter = detections.begin(); iterOuter != detections.end(); iterOuter++)
-        {
-            // TODO: find the overlapping detections and remove them
-        }
     }
 
     // Get the color for the given type

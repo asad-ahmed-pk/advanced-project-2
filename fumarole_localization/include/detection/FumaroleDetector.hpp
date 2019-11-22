@@ -55,7 +55,6 @@ namespace Detection
         cv::Scalar ColorForType(Model::FumaroleType type) const;
         cv::Rect EnclosingBoundingBox(const std::vector<cv::Rect>& boxes) const;
 
-        void RemoveOverlappingDetections(std::vector<FumaroleDetection>& detections) const;
         void RadiusSearch(const std::vector<cv::Point2f>& centroids, std::map<int, std::vector<int>>& matchedIndices, float radius) const;
 
     private:
