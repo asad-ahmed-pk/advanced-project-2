@@ -12,7 +12,7 @@
 #include <iomanip>
 #include <algorithm>
 
-const std::string FOLDER { "test_set_2/" };
+const std::string FOLDER { "test_set_3/" };
 
 int main(int argc, char** argv)
 {

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <numeric>
+#include <iostream>
 #include <eigen3/Eigen/Eigen>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -129,7 +130,9 @@ namespace Evaluation
     {
         // draw the bounding boxes of detections vs the ground truth bounding boxes
         cv::Mat image;
-        IO::GetThermalImage(fileID, image, true);
+        if (!IO::GetThermalImage(fileID, image, true)) {
+            std::cerr << "\nFailed to read image: " << fileID << " for evaluation" << std::endl;
+        }
 
         // draw ground truth bounding boxes
         for (const auto& y : truth) {

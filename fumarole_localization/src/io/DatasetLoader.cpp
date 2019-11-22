@@ -30,7 +30,7 @@ namespace IO
             {
                 boost::trim_right(fileID);
 
-                filePath = Config::HEATMAPS_GREY_DIR;
+                filePath = Config::THERMAL_IMAGES_DIR;
                 filePath += Config::THERMAL_IMAGE_PREFIX;
                 filePath += fileID;
                 filePath += Config::THERMAL_IMAGE_FILE_EXT;

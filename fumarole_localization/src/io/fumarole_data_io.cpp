@@ -19,7 +19,7 @@ namespace IO
         boost::filesystem::path path;
         boost::filesystem::directory_iterator end;
 
-        for (boost::filesystem::directory_iterator itr(Config::HEATMAPS_GREY_DIR); itr != end; itr++)
+        for (boost::filesystem::directory_iterator itr(Config::THERMAL_IMAGES_DIR); itr != end; itr++)
         {
             path = std::move(boost::filesystem::path(*itr));
 
@@ -37,7 +37,7 @@ namespace IO
     // Get the thermal image for the given file id
     bool GetThermalImage(const std::string& fileID, cv::Mat& image, bool readAsRGB)
     {
-        const std::string filePath { Config::HEATMAPS_GREY_DIR + Config::THERMAL_IMAGE_PREFIX + fileID + Config::THERMAL_IMAGE_FILE_EXT };
+        const std::string filePath {Config::THERMAL_IMAGES_DIR + Config::THERMAL_IMAGE_PREFIX + fileID + Config::THERMAL_IMAGE_FILE_EXT };
         image = cv::imread(filePath, readAsRGB ? cv::IMREAD_COLOR : cv::IMREAD_GRAYSCALE);
         return (image.data != nullptr);
     }

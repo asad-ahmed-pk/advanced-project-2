@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <vector>
+#include <iostream>
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
@@ -84,7 +85,9 @@ namespace Pipeline
         {
             cv::Mat output;
 
-            IO::GetFullResCamImage(filename, output);
+            if (!IO::GetFullResCamImage(filename, output)) {
+                std::cerr << "\nContour: Failed to get image: " << filename << std::endl;
+            }
             //IO::GetThermalImage(filename, output, true);
 
             if (!contoursForThermalRange.empty()) {

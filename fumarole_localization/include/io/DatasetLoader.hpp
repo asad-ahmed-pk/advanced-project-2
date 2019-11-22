@@ -19,6 +19,7 @@ namespace IO
     {
     public:
         /// Loads the file IDs from the given file
+        /// \param folder The name of the test set folder
         /// \param files A reference to a map that will be filled with <file id: file path>
         static void GetTestFiles(const std::string& folder, std::map<std::string, std::string> &files);
 
