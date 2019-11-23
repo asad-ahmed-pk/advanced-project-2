@@ -22,6 +22,9 @@ find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 # Includes
 include_directories(include)
+if (${MACOSX})
+    include_directories(eigen3)
+endif()
 
 # Sources
 list(APPEND PIPELINE_SOURCES
@@ -43,6 +46,7 @@ list(APPEND OTHER_SOURCES
         src/config/ConfigParser.cpp
         src/detection/FumaroleDetector.cpp
         src/evaluation/AlgorithmEvaluator.cpp
+        src/evaluation/ConfusionMatrix.cpp
         src/model/FumaroleType.cpp
 )
 
