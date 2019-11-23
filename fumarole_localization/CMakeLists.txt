@@ -45,6 +45,7 @@ list(APPEND IO_SOURCES
 list(APPEND OTHER_SOURCES
         src/config/ConfigParser.cpp
         src/detection/FumaroleDetector.cpp
+        src/evaluation/Evaluation.cpp
         src/evaluation/AlgorithmEvaluator.cpp
         src/evaluation/ConfusionMatrix.cpp
         src/model/FumaroleType.cpp

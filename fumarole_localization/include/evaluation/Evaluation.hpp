@@ -9,6 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "model/FumaroleType.hpp"
+#include "ConfusionMatrix.hpp"
+
 namespace Evaluation
 {
     // Note: Localization accuracy models how accurate the algorithm matches a fumarole to its ground truth
@@ -21,6 +24,9 @@ namespace Evaluation
         int NumberOfActualFumaroles = 0;
         int NumberDetected = 0;
         float AverageIoU = 0.0;
+        ConfusionMatrix ConfusionMatrix;
+
+        FumaroleDetectionEvaluation();
     };
 
     /// Evaluation on multiple images (the entire detection algorithm)

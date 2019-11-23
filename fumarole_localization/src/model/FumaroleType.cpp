@@ -16,9 +16,11 @@ namespace Model
             case FUMAROLE_OPEN_VENT:
                 return "fumarole_open_vent";
             case FUMAROLE_HIDDEN_VENT:
-                return "fumarole_hidden";
+                return "fumarole_hidden_vent";
             case FUMAROLE_HEATED_AREA:
                 return "fumarole_heated_area";
+            case UNKNOWN:
+                return "unknown";
         }
     }
 }
