@@ -11,8 +11,13 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
+#include <numeric>
 
 const std::string FOLDER { "test_set_3/" };
+
+// Eval functions for detector and classifier
+void EvaluateDetector(const Evaluation::AlgorithmEvaluation& evaluation);
+void EvaluateClassifier(const Evaluation::AlgorithmEvaluation& evaluation);
 
 int main(int argc, char** argv)
 {
@@ -33,14 +38,32 @@ int main(int argc, char** argv)
     Evaluation::AlgorithmEvaluator evaluator;
     Evaluation::AlgorithmEvaluation eval = evaluator.EvaluateDetectionPipeline(results, groundTruth);
 
-    const float precision = static_cast<float>(eval.TotalNumberDetected) / static_cast<float>(eval.TotalNumberOfActualFumaroles) * 100;
+    // draw the results vs ground truth for comparison
+    std::cout << "\n\nSaving ground truth vs results" << std::endl;
+    for (const auto& y : groundTruth) {
+        evaluator.DrawDetectionsVsGroundtruth(y.first, FOLDER, results[y.first], y.second);
+    }
+
+    // print stats for detector and classifier performance
+    EvaluateDetector(eval);
+    EvaluateClassifier(eval);
+
+    std::cout << std::endl;
+
+    return 0;
+}
+
+// Evaluate detection
+void EvaluateDetector(const Evaluation::AlgorithmEvaluation& evaluation)
+{
+    const float precision = static_cast<float>(evaluation.TotalNumberDetected) / static_cast<float>(evaluation.TotalNumberOfActualFumaroles) * 100;
 
     // print out evaluation results
-    std::cout << "\n\n--------------- Algorithm Evaluation ---------------\n";
-    std::cout << "\nTotal number of detections = " << eval.TotalNumberDetected;
-    std::cout << "\nActual number of detections = " << eval.TotalNumberOfActualFumaroles;
-    std::cout << "\nTotal Average IoU = " << eval.TotalAverageIoU;
-    std::cout << "\nTotal Accuracy (%) = " << eval.TotalAverageIoU * 100;
+    std::cout << "\n\n--------------- Detector Evaluation ---------------\n";
+    std::cout << "\nTotal number of detections = " << evaluation.TotalNumberDetected;
+    std::cout << "\nActual number of detections = " << evaluation.TotalNumberOfActualFumaroles;
+    std::cout << "\nTotal Average IoU = " << evaluation.TotalAverageIoU;
+    std::cout << "\nTotal Accuracy (%) = " << evaluation.TotalAverageIoU * 100;
     std::cout << "\nTotal Precision (%) = " << precision;
     if (precision > 100) {
         std::cout << " (Over detected)";
@@ -60,7 +83,7 @@ int main(int argc, char** argv)
     std::cout << std::setw(10) << std::setfill(' ') << "Actual";
     std::cout << std::endl;
 
-    for (const Evaluation::FumaroleDetectionEvaluation& e : eval.Evaluations)
+    for (const Evaluation::FumaroleDetectionEvaluation& e : evaluation.Evaluations)
     {
         std::cout << std::setw(12) << std::setfill(' ') << e.ImageID;
         std::cout << std::setw(10) << std::setfill(' ') << " ";
@@ -74,14 +97,40 @@ int main(int argc, char** argv)
 
         std::cout << std::endl;
     }
+}
 
-    // draw the results vs ground truth for comparison
-    std::cout << "\n\nSaving ground truth vs results" << std::endl;
-    for (const auto& y : groundTruth) {
-        evaluator.DrawDetectionsVsGroundtruth(y.first, FOLDER, results[y.first], y.second);
-    }
+// Evaluate classifier
+void EvaluateClassifier(const Evaluation::AlgorithmEvaluation& evaluation)
+{
+    // get total accuracy and miss-classification rate over all images
+    std::vector<float> scores;
+    std::transform(evaluation.Evaluations.begin(), evaluation.Evaluations.end(), std::back_inserter(scores), [](const Evaluation::FumaroleDetectionEvaluation& e) -> float { return e.ConfusionMatrix.GetAccuracy(); });
+    float sum = std::accumulate(scores.begin(), scores.end(), 0.0);
+    float totalAccuracy = sum / static_cast<float>(evaluation.Evaluations.size());
 
+    // print out evaluation results
+    std::cout << "\n\n--------------- Classifier Evaluation ---------------\n";
+    std::cout << "\nOverall Accuracy Rate (%) = " << totalAccuracy * 100;
+    std::cout << "\nOverall Misclassification Rate (%) = " << (1.0 - totalAccuracy) * 100;
     std::cout << std::endl;
 
-    return 0;
+    // print out individual results
+    std::cout << "\n--------------- Image Evaluation ---------------\n";
+    std::cout << std::setw(12) << std::setfill(' ') << "\nImage ID";
+    std::cout << std::setw(10) << std::setfill(' ') << " ";
+    std::cout << std::setw(10) << std::setfill(' ') << "Accuracy";
+    std::cout << std::setw(10) << std::setfill(' ') << " ";
+    std::cout << std::setw(10) << std::setfill(' ') << "Misclassification Rate";
+    std::cout << std::endl;
+
+    for (const Evaluation::FumaroleDetectionEvaluation& e : evaluation.Evaluations)
+    {
+        std::cout << std::setw(12) << std::setfill(' ') << e.ImageID;
+        std::cout << std::setw(10) << std::setfill(' ') << " ";
+        std::cout << std::setw(10) << std::setfill(' ') << e.ConfusionMatrix.GetAccuracy();
+        std::cout << std::setw(10) << std::setfill(' ') << " ";
+        std::cout << std::setw(10) << std::setfill(' ') << 1.0 - e.ConfusionMatrix.GetAccuracy();
+
+        std::cout << std::endl;
+    }
 }

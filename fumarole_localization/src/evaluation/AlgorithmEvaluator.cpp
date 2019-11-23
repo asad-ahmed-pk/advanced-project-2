@@ -57,6 +57,7 @@ namespace Evaluation
             }
         }
 
+        // total average IoU for whole algo considering all detections in all images
         eval.TotalAverageIoU = totalIoU / static_cast<float>(eval.Evaluations.size());
 
         return std::move(eval);
@@ -85,6 +86,10 @@ namespace Evaluation
             // ie; this was the corresponding rect to compare to in the ground truth set
             auto maxIter = std::max_element(ious.begin(), ious.end());
             correspondingIOUs.push_back(*maxIter);
+
+            // classification evaluation
+            size_t truthIndex = std::distance(ious.begin(), maxIter);
+            eval.ConfusionMatrix.AddClassifications(Model::TypeNameString(result.Type), Model::TypeNameString(truth[truthIndex].Type));
 
             // clear for matching next result
             ious.clear();

@@ -16,12 +16,14 @@
 namespace Evaluation
 {
     // Constructor
-    ConfusionMatrix::ConfusionMatrix(const std::vector<std::string> &classLabels) : m_ClassLabels(classLabels)
+    ConfusionMatrix::ConfusionMatrix(const std::vector<std::string> &classLabels) : m_ClassLabels(classLabels), m_Matrix(classLabels.size(), classLabels.size())
     {
         // initialise matrix
-        m_Matrix.resize(m_ClassLabels.size(), m_ClassLabels.size());
-        for (size_t i = 0; i < m_ClassLabels.size(); i++) {
-            m_Matrix(i, i) = 0;
+        for (size_t i = 0; i < m_ClassLabels.size(); i++)
+        {
+            for (size_t j = 0; j < m_ClassLabels.size(); j++) {
+                m_Matrix(i, j) = 0;
+            }
         }
     }
 

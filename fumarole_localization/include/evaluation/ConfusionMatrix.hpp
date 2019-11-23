@@ -57,7 +57,7 @@ namespace Evaluation
 
     private:
         std::vector<std::string> m_ClassLabels;
-        Eigen::MatrixX2i m_Matrix;
+        Eigen::MatrixXi m_Matrix;
     };
 }
 
