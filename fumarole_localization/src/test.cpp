@@ -9,15 +9,19 @@
 #include <map>
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 #include <algorithm>
 #include <numeric>
+#include <boost/filesystem.hpp>
 
 const std::string FOLDER { "test_set_3/" };
+const std::string CSV_SAVE_FOLDER { "confusion_matrix" };
 
 // Eval functions for detector and classifier
 void EvaluateDetector(const Evaluation::AlgorithmEvaluation& evaluation);
 void EvaluateClassifier(const Evaluation::AlgorithmEvaluation& evaluation);
+void SaveConfusionMatrices(const Evaluation::AlgorithmEvaluation& evaluation);
 
 int main(int argc, char** argv)
 {
@@ -47,6 +51,9 @@ int main(int argc, char** argv)
     // print stats for detector and classifier performance
     EvaluateDetector(eval);
     EvaluateClassifier(eval);
+
+    // save confusion matrices to csv
+    SaveConfusionMatrices(eval);
 
     std::cout << std::endl;
 
@@ -132,5 +139,23 @@ void EvaluateClassifier(const Evaluation::AlgorithmEvaluation& evaluation)
         std::cout << std::setw(10) << std::setfill(' ') << 1.0 - e.ConfusionMatrix.GetAccuracy();
 
         std::cout << std::endl;
+    }
+}
+
+// Save confusion matrices as CSV
+void SaveConfusionMatrices(const Evaluation::AlgorithmEvaluation& evaluation)
+{
+    // create folder if required
+    const std::string folderPath = CSV_SAVE_FOLDER + "/" + FOLDER;
+    if (!boost::filesystem::exists(folderPath)) {
+        boost::filesystem::create_directories(folderPath);
+    }
+
+    for (const Evaluation::FumaroleDetectionEvaluation& e : evaluation.Evaluations)
+    {
+        std::ofstream fs;
+        fs.open(folderPath + e.ImageID + ".csv", std::ios::out);
+        fs << e.ConfusionMatrix;
+        fs.close();
     }
 }

@@ -93,4 +93,36 @@ namespace Evaluation
         float total = m_Matrix.sum();
         return (correct / total);
     }
+
+    // Output stream
+    std::ostream& operator<<(std::ostream& os, const ConfusionMatrix& cm)
+    {
+        // output headers
+        os << ",";
+        for (size_t i = 0; i < cm.m_ClassLabels.size(); i++)
+        {
+            os << cm.m_ClassLabels[i];
+            if (i < cm.m_ClassLabels.size() - 1) {
+                os << ",";
+            }
+        }
+        os << std::endl;
+
+        // output confusion matrix
+        for (int i = 0; i < cm.m_ClassLabels.size(); i++)
+        {
+            os << cm.m_ClassLabels[i] << ",";
+            for (int j = 0; j < cm.m_ClassLabels.size(); j++)
+            {
+                os << cm.m_Matrix(i, j);
+                if (j < cm.m_ClassLabels.size() - 1) {
+                    os << ",";
+                }
+            }
+            os << std::endl;
+        }
+
+        return os;
+    }
+
 }

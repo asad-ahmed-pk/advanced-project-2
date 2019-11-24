@@ -9,6 +9,7 @@
 #include <vector>
 #include <string>
 #include <tuple>
+#include <iostream>
 
 #ifdef __APPLE__
     #include <eigen3/Eigen/Eigen>
@@ -33,11 +34,6 @@ namespace Evaluation
         /// \param count The number of classifications made
         void AddClassifications(const std::string& predictedClass, const std::string& actualClass, int count = 1);
 
-        /// Get the current classifications as the count of classifications predicted and the total number of ground truth classifications
-        /// \param classLabel The name of the class
-        /// \return Returns a tuple where 0 -> predicted cases, 1 -> actual cases for the class
-        std::tuple<int, int> GetClassificationScore(const std::string& classLabel) const;
-
         /// Returns the accuracy of the classifier
         /// \return The accuracy score
         float GetAccuracy() const;
@@ -51,6 +47,12 @@ namespace Evaluation
         /// \param classLabel
         /// \return The recall score
         float GetRecall(const std::string& classLabel) const;
+
+        /// Output confusion matrix as a CSV stream
+        /// \param os output stream
+        /// \param cm Confusion matrix
+        /// \return A reference to the output stream
+        friend std::ostream& operator<<(std::ostream& os, const ConfusionMatrix& cm);
 
     private:
         int IndexOfClass(const std::string& classLabel) const;
