@@ -1,0 +1,26 @@
+<annotation>
+	<folder>random_sample</folder>
+	<filename>000653214000.tiff</filename>
+	<path>/Users/asad/Documents/_Jacobs University/_Study/Semester 3/Advanced Project II/advanced-project-2/tools/output/random_sample/000653214000.tiff</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>1360</width>
+		<height>1024</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>heated_area</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>768</xmin>
+			<ymin>436</ymin>
+			<xmax>976</xmax>
+			<ymax>654</ymax>
+		</bndbox>
+	</object>
+</annotation>
