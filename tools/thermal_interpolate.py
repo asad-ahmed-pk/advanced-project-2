@@ -45,7 +45,11 @@ for image_file in thermal_images:
     print("Processing", image_file)
 
     image = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
-    output = process_image(image, 9)
+    try:
+        output = process_image(image, 9)
+    except:
+        print("Error. Image", path, "skipped!")
+        continue
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
