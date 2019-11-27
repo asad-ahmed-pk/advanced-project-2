@@ -91,6 +91,11 @@ namespace Evaluation
     {
         float correct = m_Matrix.diagonal().sum();
         float total = m_Matrix.sum();
+
+        if (total == 0) {
+            total = 1.0;
+        }
+
         return (correct / total);
     }
 
@@ -125,4 +130,9 @@ namespace Evaluation
         return os;
     }
 
+    // Append other confusion matrix data
+    ConfusionMatrix& ConfusionMatrix::operator+=(const Evaluation::ConfusionMatrix &other) {
+        this->m_Matrix += other.m_Matrix;
+        return *this;
+    }
 }

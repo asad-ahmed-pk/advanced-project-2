@@ -54,10 +54,13 @@ namespace Evaluation
 
                 // accumulate total average IoU
                 totalIoU += singleImageEval.AverageIoU;
+
+                // sum up confusion matrix for overall score
+                eval.ConfusionMatrix += singleImageEval.ConfusionMatrix;
             }
         }
 
-        // total average IoU for whole algo considering all detections in all images
+        // total average IoU for whole algorithm considering all detections in all images
         eval.TotalAverageIoU = totalIoU / static_cast<float>(eval.Evaluations.size());
 
         return std::move(eval);
@@ -95,7 +98,8 @@ namespace Evaluation
             ious.clear();
         }
 
-        eval.AverageIoU = std::accumulate(correspondingIOUs.begin(), correspondingIOUs.end(), 0.0) / static_cast<float>(correspondingIOUs.size());
+        float n = correspondingIOUs.size() > 0 ? static_cast<float>(correspondingIOUs.size()) : 1.0;
+        eval.AverageIoU = std::accumulate(correspondingIOUs.begin(), correspondingIOUs.end(), 0.0) / n;
 
         return eval;
     }

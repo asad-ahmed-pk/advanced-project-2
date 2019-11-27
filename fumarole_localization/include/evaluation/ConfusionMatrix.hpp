@@ -54,6 +54,11 @@ namespace Evaluation
         /// \return A reference to the output stream
         friend std::ostream& operator<<(std::ostream& os, const ConfusionMatrix& cm);
 
+        /// Append another confusion matrix scores
+        /// \param other The other confusion matrix (dimensions must match)
+        /// \return Return the reference to this matrix with the appended matrix data
+        ConfusionMatrix& operator+=(const ConfusionMatrix& other);
+
     private:
         int IndexOfClass(const std::string& classLabel) const;
 

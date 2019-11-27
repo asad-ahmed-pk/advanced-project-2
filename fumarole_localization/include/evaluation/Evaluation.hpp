@@ -35,7 +35,10 @@ namespace Evaluation
         int TotalNumberOfActualFumaroles = 0;
         int TotalNumberDetected = 0;
         float TotalAverageIoU = 0.0;
+        ConfusionMatrix ConfusionMatrix;
         std::vector<FumaroleDetectionEvaluation> Evaluations;
+
+        AlgorithmEvaluation();
     };
 }
 

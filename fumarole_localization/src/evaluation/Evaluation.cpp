@@ -10,5 +10,10 @@ namespace Evaluation
     {
 
     }
+
+    AlgorithmEvaluation::AlgorithmEvaluation() : ConfusionMatrix(Model::ClassLabels)
+    {
+
+    }
 }
 

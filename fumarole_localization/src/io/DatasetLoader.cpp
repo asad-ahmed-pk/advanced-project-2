@@ -98,7 +98,7 @@ namespace IO
         else if (classString == "open_vent") {
             return Model::FumaroleType::FUMAROLE_OPEN_VENT;
         }
-        else if (classString == "hidden_vent") {
+        else if (classString == "hidden_vent" || classString == "hidden") {
             return Model::FumaroleType::FUMAROLE_HIDDEN_VENT;
         }
         else if (classString == "heated_area") {

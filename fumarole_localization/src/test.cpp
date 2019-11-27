@@ -9,14 +9,14 @@
 #include <map>
 #include <vector>
 #include <iostream>
-#include <fstream>
 #include <iomanip>
 #include <algorithm>
 #include <numeric>
 #include <boost/filesystem.hpp>
 
-const std::string FOLDER { "test_set_3/" };
+const std::string FOLDER { "test_set_4/" };
 const std::string CSV_SAVE_FOLDER { "confusion_matrix" };
+const std::string CONFUSION_MATRIX_FILE_NAME { "classification_confusion_matrix" };
 
 // Eval functions for detector and classifier
 void EvaluateDetector(const Evaluation::AlgorithmEvaluation& evaluation);
@@ -109,19 +109,13 @@ void EvaluateDetector(const Evaluation::AlgorithmEvaluation& evaluation)
 // Evaluate classifier
 void EvaluateClassifier(const Evaluation::AlgorithmEvaluation& evaluation)
 {
-    // get total accuracy and miss-classification rate over all images
-    std::vector<float> scores;
-    std::transform(evaluation.Evaluations.begin(), evaluation.Evaluations.end(), std::back_inserter(scores), [](const Evaluation::FumaroleDetectionEvaluation& e) -> float { return e.ConfusionMatrix.GetAccuracy(); });
-    float sum = std::accumulate(scores.begin(), scores.end(), 0.0);
-    float totalAccuracy = sum / static_cast<float>(evaluation.Evaluations.size());
-
-    // print out evaluation results
+    // print out overall classification results
     std::cout << "\n\n--------------- Classifier Evaluation ---------------\n";
-    std::cout << "\nOverall Accuracy Rate (%) = " << totalAccuracy * 100;
-    std::cout << "\nOverall Misclassification Rate (%) = " << (1.0 - totalAccuracy) * 100;
+    std::cout << "\nOverall Accuracy Rate (%) = " << evaluation.ConfusionMatrix.GetAccuracy() * 100;
+    std::cout << "\nOverall Misclassification Rate (%) = " << (1.0 - evaluation.ConfusionMatrix.GetAccuracy()) * 100;
     std::cout << std::endl;
 
-    // print out individual results
+    // print out individual results per image
     std::cout << "\n--------------- Image Evaluation ---------------\n";
     std::cout << std::setw(12) << std::setfill(' ') << "\nImage ID";
     std::cout << std::setw(10) << std::setfill(' ') << " ";
@@ -134,15 +128,15 @@ void EvaluateClassifier(const Evaluation::AlgorithmEvaluation& evaluation)
     {
         std::cout << std::setw(12) << std::setfill(' ') << e.ImageID;
         std::cout << std::setw(10) << std::setfill(' ') << " ";
-        std::cout << std::setw(10) << std::setfill(' ') << e.ConfusionMatrix.GetAccuracy();
+        std::cout << std::setw(10) << std::setfill(' ') << e.ConfusionMatrix.GetAccuracy() * 100;
         std::cout << std::setw(10) << std::setfill(' ') << " ";
-        std::cout << std::setw(10) << std::setfill(' ') << 1.0 - e.ConfusionMatrix.GetAccuracy();
+        std::cout << std::setw(10) << std::setfill(' ') << (1.0 - e.ConfusionMatrix.GetAccuracy()) * 100;
 
         std::cout << std::endl;
     }
 }
 
-// Save confusion matrices as CSV
+// Save confusion matrices as CSVs
 void SaveConfusionMatrices(const Evaluation::AlgorithmEvaluation& evaluation)
 {
     // create folder if required
@@ -151,6 +145,13 @@ void SaveConfusionMatrices(const Evaluation::AlgorithmEvaluation& evaluation)
         boost::filesystem::create_directories(folderPath);
     }
 
+    // save overall algo classification confusion matrix
+    std::ofstream fs;
+    fs.open(folderPath + CONFUSION_MATRIX_FILE_NAME + ".csv", std::ios::out);
+    fs << evaluation.ConfusionMatrix;
+    fs.close();
+
+    // save individual confusion matrices
     for (const Evaluation::FumaroleDetectionEvaluation& e : evaluation.Evaluations)
     {
         std::ofstream fs;
