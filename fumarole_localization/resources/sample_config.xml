@@ -1,19 +1,15 @@
 <config>
     <pipeline>
-        <heat_threshold>
-            <lower>79</lower>
-            <upper>255</upper>
-        </heat_threshold>
         <histogram>
-            <bins>80 160 220 255</bins>
+            <bins>80 120 190 255</bins>
         </histogram>
         <contour>
-            <min_area>300</min_area>
+            <min_area>1000</min_area>
         </contour>
     </pipeline>
     <detection>
-        <min_area_heated_area>1000</min_area_heated_area>
+        <min_area_heated_area>1200</min_area_heated_area>
         <open_vent_radius_search>2400</open_vent_radius_search>
-        <hidden_area_radius_search>4000</hidden_area_radius_search>
+        <hidden_area_radius_search>24000</hidden_area_radius_search>
     </detection>
 </config>
