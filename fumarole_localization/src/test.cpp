@@ -16,12 +16,14 @@
 
 const std::string FOLDER { "test_set_4/" };
 const std::string CSV_SAVE_FOLDER { "confusion_matrix" };
+const std::string DETECTION_METRICS_SAVE_FOLDER { "detection_metrics" };
 const std::string CONFUSION_MATRIX_FILE_NAME { "classification_confusion_matrix" };
 
 // Eval functions for detector and classifier
 void EvaluateDetector(const Evaluation::AlgorithmEvaluation& evaluation);
 void EvaluateClassifier(const Evaluation::AlgorithmEvaluation& evaluation);
 void SaveConfusionMatrices(const Evaluation::AlgorithmEvaluation& evaluation);
+void SaveDetectionsMetrics(const Evaluation::AlgorithmEvaluation& evaluation);
 
 int main(int argc, char** argv)
 {
@@ -39,6 +41,7 @@ int main(int argc, char** argv)
     detector.SaveResults(results);
 
     // evaluate the results
+    std::cout << "\n\nRunning evaluation..." << std::endl;
     Evaluation::AlgorithmEvaluator evaluator;
     Evaluation::AlgorithmEvaluation eval = evaluator.EvaluateDetectionPipeline(results, groundTruth);
 
@@ -51,6 +54,9 @@ int main(int argc, char** argv)
     // print stats for detector and classifier performance
     EvaluateDetector(eval);
     EvaluateClassifier(eval);
+
+    // save detection metrics to csv files
+    SaveDetectionsMetrics(eval);
 
     // save confusion matrices to csv
     SaveConfusionMatrices(eval);
@@ -159,4 +165,26 @@ void SaveConfusionMatrices(const Evaluation::AlgorithmEvaluation& evaluation)
         fs << e.ConfusionMatrix;
         fs.close();
     }
+}
+
+// Write detection metrics to CSV files
+void SaveDetectionsMetrics(const Evaluation::AlgorithmEvaluation& evaluation)
+{
+    std::cout << "\nSaving detection metrics for single images" << std::endl;
+
+    // create folder if needed
+    if (!boost::filesystem::exists(DETECTION_METRICS_SAVE_FOLDER)) {
+        boost::filesystem::create_directories(DETECTION_METRICS_SAVE_FOLDER);
+    }
+
+    std::string filePath;
+    for (const Evaluation::FumaroleDetectionEvaluation& e : evaluation.Evaluations)
+    {
+        filePath = DETECTION_METRICS_SAVE_FOLDER + "/" + e.ImageID + ".csv";
+        Evaluation::AlgorithmEvaluator::SaveDetectionEvaluationMetricsToCSV(filePath, e.DetectionMetrics);
+    }
+
+    std::cout << "\nSaving total detection metrics to CSV file" << std::endl;
+    filePath = DETECTION_METRICS_SAVE_FOLDER + "/total_metrics.csv";
+    Evaluation::AlgorithmEvaluator::SaveDetectionEvaluationMetricsToCSV(filePath, evaluation.DetectionMetrics);
 }

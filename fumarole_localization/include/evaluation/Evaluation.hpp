@@ -8,6 +8,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 #include "model/FumaroleType.hpp"
 #include "ConfusionMatrix.hpp"
@@ -21,10 +22,17 @@ namespace Evaluation
     struct FumaroleDetectionEvaluation
     {
         std::string ImageID = "n/a";
+
         int NumberOfActualFumaroles = 0;
         int NumberDetected = 0;
+
         float AverageIoU = 0.0;
+
         ConfusionMatrix ConfusionMatrix;
+
+        // for evaluation of the bounding box detections (not the classification - class labels)
+        // each key is the bin number and the value is the count
+        std::map<int, std::tuple<int, int>> DetectionMetrics;
 
         FumaroleDetectionEvaluation();
     };
@@ -36,6 +44,7 @@ namespace Evaluation
         int TotalNumberDetected = 0;
         float TotalAverageIoU = 0.0;
         ConfusionMatrix ConfusionMatrix;
+        std::map<int, std::tuple<int, int>> DetectionMetrics;
         std::vector<FumaroleDetectionEvaluation> Evaluations;
 
         AlgorithmEvaluation();

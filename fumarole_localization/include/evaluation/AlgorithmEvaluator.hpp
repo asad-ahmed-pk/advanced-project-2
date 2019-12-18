@@ -41,9 +41,19 @@ namespace Evaluation
         /// \param truth A list of ground truth results
         void DrawDetectionsVsGroundtruth(const std::string& fileID, const std::string& folder, const std::vector<Detection::FumaroleDetection>& results, const std::vector<Detection::FumaroleDetection>& truth) const;
 
+        static void SaveDetectionEvaluationMetricsToCSV(const std::string filePath, const std::map<int, std::tuple<int, int>>& metrics);
+
     private:
         void ConvertResultsToEigenVectors(const std::vector<Detection::FumaroleDetection>& results, std::vector<Eigen::Vector4f>& vectors) const;
+        void ConvertResultsToEigenVectors(const std::vector<Detection::FumaroleDetection>& detections, std::vector<Eigen::Vector2f>& vectors) const;
+        Eigen::MatrixX2f ConvertToCentroidEigenMatrix(const std::vector<Detection::FumaroleDetection>& detections) const;
+        void ComputeDetectionMetrics(const std::vector<Detection::FumaroleDetection>& results, const std::vector<Detection::FumaroleDetection>& groundTruth, std::map<int, std::tuple<int, int>>& metrics) const;
         float ComputeIoU(const cv::Rect& r1, const cv::Rect& r2) const;
+
+    private:
+        int m_DetectionThresholdMin;
+        int m_DetectionThresholdMax;
+        int m_DetectionThresholdStep;
     };
 }
 

@@ -4,7 +4,7 @@
             <bins>80 120 190 255</bins>
         </histogram>
         <contour>
-            <min_area>1000</min_area>
+            <min_area>200</min_area>
         </contour>
     </pipeline>
     <detection>
@@ -12,4 +12,11 @@
         <open_vent_radius_search>2400</open_vent_radius_search>
         <hidden_area_radius_search>24000</hidden_area_radius_search>
     </detection>
+    <evaluation>
+        <detection>
+            <threshold_min>0</threshold_min>
+            <threshold_max>20000</threshold_max>
+            <threshold_step>200</threshold_step>
+        </detection>
+    </evaluation>
 </config>
