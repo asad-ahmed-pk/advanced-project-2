@@ -9,6 +9,7 @@ import pandas as pd
 # files paths and constants
 confusion_matrix_file_path = "../fumarole_localization/build/confusion_matrix/test_set_4/classification_confusion_matrix.csv"
 detection_metrics_csv_path = "../fumarole_localization/build/detection_metrics/total_metrics.csv"
+detection_iou_metrics_csv_path = "../fumarole_localization/build/iou_metrics/total_metrics.csv"
 
 def plot_confusion_matrix():
     """ Plot the confusion matrix for the classification evaluation """
@@ -41,9 +42,22 @@ def plot_detection_precision_plot():
     print('\nDetector precision plot saved')
 
 
+def plot_detection_success_plot():
+    """ Plot the IoU error threshold vs the IoU """
+    df = pd.read_csv(detection_iou_metrics_csv_path)
+
+    plt.figure(figsize = (10,7))
+    ax = sns.lineplot(x="Threshold", y="Success Rate", data=df)
+    ax.set(xlabel='Object Detection IoU Threshold', ylabel='Success Rate', title='Detector Success Plot')
+    plt.savefig('output/detector_success_plot.png')
+
+    print('\nDetector success plot saved')
+
+
 def run_main():
     plot_detection_precision_plot()
-    #plot_confusion_matrix()
+    plot_detection_success_plot()
+    plot_confusion_matrix()
 
 if __name__ == "__main__":
     run_main()
