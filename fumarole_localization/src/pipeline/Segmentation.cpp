@@ -9,7 +9,7 @@
 
 namespace Pipeline
 {
-    Segmentation::Segmentation(const std::string &name) : PipelineElement(name)
+    Segmentation::Segmentation(const std::string &name, bool saveResults) : PipelineElement(name, saveResults)
     {
 
     }
@@ -36,8 +36,10 @@ namespace Pipeline
         result = centers;
 
         // convert segmented points back to image (intensity quantization)
-        ConvertPointsToImage(*centers, clusterIndices, output, input.rows, input.cols);
-        SaveResult(output, filename);
+        if (m_SaveIntermediateResults) {
+            ConvertPointsToImage(*centers, clusterIndices, output, input.rows, input.cols);
+            SaveResult(output, filename);
+        }
     }
 
     // Convert image to points

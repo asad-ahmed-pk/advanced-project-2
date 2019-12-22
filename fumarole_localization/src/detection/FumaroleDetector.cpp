@@ -24,7 +24,7 @@ namespace Detection
     const int DRAW_THICKNESS { 3 };
 
     // Constructor
-    FumaroleDetector::FumaroleDetector()
+    FumaroleDetector::FumaroleDetector(bool saveIntermediateResults) : m_SaveResults(saveIntermediateResults)
     {
         // load params from config file
         m_MinAreaForHeatedArea = Config::ConfigParser::GetInstance().GetValue<float>("config.detection.min_area_heated_area");
@@ -59,7 +59,7 @@ namespace Detection
     bool FumaroleDetector::DetectFumaroles(const std::map<std::string, std::string> &files, std::map<std::string, std::vector<Detection::FumaroleDetection>> &results) const
     {
         // create a detection pipeline
-        Pipeline::Pipeline pipeline(files);
+        Pipeline::Pipeline pipeline(files, m_SaveResults);
 
         // run pipeline
         if (pipeline.Run())

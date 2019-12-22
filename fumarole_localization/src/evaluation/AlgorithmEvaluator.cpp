@@ -25,6 +25,7 @@ namespace Evaluation
         m_DetectionThresholdMin = Config::ConfigParser::GetInstance().GetValue<int>("config.evaluation.detection.threshold_min");
         m_DetectionThresholdMax = Config::ConfigParser::GetInstance().GetValue<int>("config.evaluation.detection.threshold_max");
         m_DetectionThresholdStep = Config::ConfigParser::GetInstance().GetValue<int>("config.evaluation.detection.threshold_step");
+        m_IoUThresholdStep = Config::ConfigParser::GetInstance().GetValue<float>("config.evaluation.detection.iou_threshold_step");
     }
 
     AlgorithmEvaluator::~AlgorithmEvaluator()
@@ -60,7 +61,7 @@ namespace Evaluation
                 // accumulate total average IoU
                 totalIoU += singleImageEval.AverageIoU;
 
-                // accumulate total metrics
+                // accumulate total detection metrics
                 for (int t = m_DetectionThresholdMin; t <= m_DetectionThresholdMax; t += m_DetectionThresholdStep) {
                     std::get<0>(eval.DetectionMetrics[t]) += std::get<0>(singleImageEval.DetectionMetrics[t]);
                     std::get<1>(eval.DetectionMetrics[t]) += std::get<1>(singleImageEval.DetectionMetrics[t]);
@@ -68,6 +69,18 @@ namespace Evaluation
 
                 // sum up confusion matrix for overall score
                 eval.ConfusionMatrix += singleImageEval.ConfusionMatrix;
+            }
+        }
+
+        // average the detection metrics for the IoUs
+        if (!eval.Evaluations.empty())
+        {
+            for (float t = 0.0; t <= 1.0; t += m_IoUThresholdStep)
+            {
+                eval.IoUDetectionMetrics[t] = std::accumulate(eval.Evaluations.begin(), eval.Evaluations.end(), 0.0, [=](float total, Evaluation::FumaroleDetectionEvaluation &d) -> float {
+                    total += d.IoUMetrics[t];
+                    return total;
+                }) / static_cast<float>(eval.Evaluations.size());
             }
         }
 
@@ -89,10 +102,10 @@ namespace Evaluation
         std::vector<float> ious;
         std::vector<float> correspondingIOUs;
 
-        for (const auto& result : results)
+        for (const auto& x : results)
         {
             for (const auto& y : truth) {
-                float iou = ComputeIoU(result.BoundingBox, y.BoundingBox);
+                float iou = ComputeIoU(x.BoundingBox, y.BoundingBox);
                 ious.push_back(iou);
             }
 
@@ -106,11 +119,14 @@ namespace Evaluation
 
             // classification evaluation
             size_t truthIndex = std::distance(ious.begin(), maxIter);
-            eval.ConfusionMatrix.AddClassifications(Model::TypeNameString(result.Type), Model::TypeNameString(truth[truthIndex].Type));
+            eval.ConfusionMatrix.AddClassifications(Model::TypeNameString(x.Type), Model::TypeNameString(truth[truthIndex].Type));
 
             // clear for matching next result
             ious.clear();
         }
+
+        // Compute IoU metrics
+        ComputeIoUMetrics(correspondingIOUs, eval.IoUMetrics);
 
         float n = correspondingIOUs.size() > 0 ? static_cast<float>(correspondingIOUs.size()) : 1.0;
         eval.AverageIoU = std::accumulate(correspondingIOUs.begin(), correspondingIOUs.end(), 0.0) / n;
@@ -184,6 +200,27 @@ namespace Evaluation
         }
     }
 
+    // Compute IoU metrics against varying thresholds
+    void AlgorithmEvaluator::ComputeIoUMetrics(const std::vector<float>& iouScores, std::map<float, float> &metrics) const
+    {
+        // run threshold range
+        std::vector<float> validIoUs;
+        float successRate = 0.0;
+
+        for (float t = 0.0; t <= 1.0; t += m_IoUThresholdStep)
+        {
+            std::copy_if(iouScores.begin(), iouScores.end(), std::back_inserter(validIoUs), [=](const float iou) { return iou >= t; });
+            if (!iouScores.empty()) {
+                successRate = static_cast<float>(validIoUs.size()) / static_cast<float>(iouScores.size());
+            }
+
+            metrics[t] = successRate;
+
+            validIoUs.clear();
+            successRate = 0.0;
+        }
+    }
+
     // Convert std::vector of detections to eigen matrix of centroids of detections
     Eigen::MatrixX2f AlgorithmEvaluator::ConvertToCentroidEigenMatrix(const std::vector<Detection::FumaroleDetection> &detections) const
     {
@@ -230,6 +267,23 @@ namespace Evaluation
             fs << std::get<0>(pair.second) << ",";
             fs << std::get<1>(pair.second) << ",";
             fs << static_cast<float>(std::get<0>(pair.second)) / (denom > 0.0 ? denom : 1.0);
+        }
+
+        fs.close();
+    }
+
+    // Save IoU metrics to CSV
+    void AlgorithmEvaluator::SaveIoUEvaluationMetricsToCSV(const std::string filePath, const std::map<float, float> &metrics)
+    {
+        std::ofstream fs;
+        fs.open(filePath, std::ios::out);
+
+        // write header
+        fs << "Threshold," << "Success Rate";
+
+        // write the threshold and success rate to CSV file
+        for (const auto& pair : metrics) {
+            fs << "\n" << pair.first << "," << pair.second;
         }
 
         fs.close();

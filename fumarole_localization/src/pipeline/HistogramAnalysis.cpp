@@ -19,7 +19,7 @@ namespace Pipeline
 {
     const float MIN_REL_FREQUENCY_REQ = 0.1;
 
-    HistogramAnalysis::HistogramAnalysis(const std::string &name) : PipelineElement(name)
+    HistogramAnalysis::HistogramAnalysis(const std::string &name, bool saveResults) : PipelineElement(name, saveResults)
     {
         // init the frequencies for the bins to 0 (read from config file)
         std::string bins = Config::ConfigParser::GetInstance().GetValue<std::string>("config.pipeline.histogram.bins");

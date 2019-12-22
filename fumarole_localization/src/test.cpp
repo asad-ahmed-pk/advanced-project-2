@@ -17,6 +17,7 @@
 const std::string FOLDER { "test_set_4/" };
 const std::string CSV_SAVE_FOLDER { "confusion_matrix" };
 const std::string DETECTION_METRICS_SAVE_FOLDER { "detection_metrics" };
+const std::string IOU_METRICS_SAVE_FOLDER { "iou_metrics" };
 const std::string CONFUSION_MATRIX_FILE_NAME { "classification_confusion_matrix" };
 
 // Eval functions for detector and classifier
@@ -36,7 +37,7 @@ int main(int argc, char** argv)
     std::map<std::string, std::vector<Detection::FumaroleDetection>> results;
 
     // save the results
-    Detection::FumaroleDetector detector;
+    Detection::FumaroleDetector detector(true);
     detector.DetectFumaroles(testFiles, results);
     detector.SaveResults(results);
 
@@ -177,14 +178,28 @@ void SaveDetectionsMetrics(const Evaluation::AlgorithmEvaluation& evaluation)
         boost::filesystem::create_directories(DETECTION_METRICS_SAVE_FOLDER);
     }
 
+    if (!boost::filesystem::exists(IOU_METRICS_SAVE_FOLDER)) {
+        boost::filesystem::create_directories(IOU_METRICS_SAVE_FOLDER);
+    }
+
     std::string filePath;
     for (const Evaluation::FumaroleDetectionEvaluation& e : evaluation.Evaluations)
     {
+        // save detection metrics
         filePath = DETECTION_METRICS_SAVE_FOLDER + "/" + e.ImageID + ".csv";
         Evaluation::AlgorithmEvaluator::SaveDetectionEvaluationMetricsToCSV(filePath, e.DetectionMetrics);
+
+        // save IoU metrics
+        filePath = IOU_METRICS_SAVE_FOLDER + "/" + e.ImageID + ".csv";
+        Evaluation::AlgorithmEvaluator::SaveIoUEvaluationMetricsToCSV(filePath, e.IoUMetrics);
     }
 
+    // save total detection metrics
     std::cout << "\nSaving total detection metrics to CSV file" << std::endl;
+
     filePath = DETECTION_METRICS_SAVE_FOLDER + "/total_metrics.csv";
     Evaluation::AlgorithmEvaluator::SaveDetectionEvaluationMetricsToCSV(filePath, evaluation.DetectionMetrics);
+
+    filePath = IOU_METRICS_SAVE_FOLDER + "/total_metrics.csv";
+    Evaluation::AlgorithmEvaluator::SaveIoUEvaluationMetricsToCSV(filePath, evaluation.IoUDetectionMetrics);
 }

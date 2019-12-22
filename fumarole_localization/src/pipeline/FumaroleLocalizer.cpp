@@ -15,7 +15,7 @@
 namespace Pipeline
 {
     // Constructor
-    FumaroleLocalizer::FumaroleLocalizer(const std::string &name) : PipelineElement(name)
+    FumaroleLocalizer::FumaroleLocalizer(const std::string &name, bool saveResults) : PipelineElement(name, saveResults)
     {
 
     }
@@ -41,12 +41,15 @@ namespace Pipeline
         }
 
         // draw the final contours onto the image
-        //IO::GetThermalImage(filename, output, true);
-        IO::GetFullResCamImage(filename, output);
-        if (!contoursForImage.empty()) {
-            cv::drawContours(output, contoursForImage, -1, cv::Scalar(0, 0, 255), 2);
+        if (m_SaveIntermediateResults)
+        {
+            //IO::GetThermalImage(filename, output, true);
+            IO::GetFullResCamImage(filename, output);
+            if (!contoursForImage.empty()) {
+                cv::drawContours(output, contoursForImage, -1, cv::Scalar(0, 0, 255), 2);
+            }
+            SaveResult(output, filename);
         }
-        SaveResult(output, filename);
 
         // set result to vector of contours
         std::shared_ptr<std::vector<std::vector<cv::Point>>> contourList = std::make_shared<std::vector<std::vector<cv::Point>>>(contoursForImage);

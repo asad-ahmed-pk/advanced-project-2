@@ -18,7 +18,7 @@ namespace Pipeline
 
         /// Constructor
         /// \param name The name of the pipeline element
-        explicit FumaroleLocalizer(const std::string& name);
+        explicit FumaroleLocalizer(const std::string& name, bool saveResults);
 
         /// Destructor
         ~FumaroleLocalizer();

@@ -17,7 +17,7 @@ namespace Pipeline
     class HeatThreshold : public PipelineElement
     {
     public:
-        HeatThreshold(const std::string &name);
+        HeatThreshold(const std::string &name, bool saveResults);
         ~HeatThreshold() = default;
 
         /// Applies N threshold ranges (defined in the config file), and saves it in separate channels of the output image

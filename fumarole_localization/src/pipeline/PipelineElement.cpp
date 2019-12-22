@@ -14,7 +14,7 @@
 namespace Pipeline
 {
     // Constructor
-    PipelineElement::PipelineElement(std::string name) : m_Name(std::move(name))
+    PipelineElement::PipelineElement(std::string name, bool saveIntermediateResults) : m_Name(std::move(name)), m_SaveIntermediateResults(saveIntermediateResults)
     {
 
     }

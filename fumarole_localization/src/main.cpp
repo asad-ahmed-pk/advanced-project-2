@@ -35,7 +35,7 @@ int main(int argc, char** argv)
     std::map<std::string, std::vector<Detection::FumaroleDetection>> results;
 
     // create and run detector
-    Detection::FumaroleDetector detector;
+    Detection::FumaroleDetector detector(true);
     detector.DetectFumaroles(files, results);
 
     // save results to disk

@@ -19,18 +19,18 @@
 namespace Pipeline
 {
     // Constructor that runs on multiple images
-    Pipeline::Pipeline(const std::map<std::string, std::string>& files) : m_Files(files)
+    Pipeline::Pipeline(const std::map<std::string, std::string>& files, bool saveResults) : m_Files(files), m_SaveResults(saveResults)
     {
         // 1. Heat threshold - remove cold temperature range from thermal
-        std::unique_ptr<HeatThreshold> heat = std::make_unique<HeatThreshold>("heat_threshold");
+        std::unique_ptr<HeatThreshold> heat = std::make_unique<HeatThreshold>("heat_threshold", m_SaveResults);
         m_Elements.emplace_back(std::move(heat));
 
         // 2. Contour detection - detect all contours present in the segmented image
-        std::unique_ptr<FumaroleContour> contour = std::make_unique<FumaroleContour>("contours");
+        std::unique_ptr<FumaroleContour> contour = std::make_unique<FumaroleContour>("contours", m_SaveResults);
         m_Elements.emplace_back(std::move(contour));
 
         // 3. Localize all contours to outline fumaroles
-        std::unique_ptr<FumaroleLocalizer> localizer = std::make_unique<FumaroleLocalizer>("localization");
+        std::unique_ptr<FumaroleLocalizer> localizer = std::make_unique<FumaroleLocalizer>("localization", m_SaveResults);
         m_Elements.emplace_back(std::move(localizer));
     }
 

@@ -17,7 +17,8 @@ namespace Pipeline
     public:
         /// Construct a pipeline element with an input
         /// \param name The name of this element to identify
-        PipelineElement(std::string name);
+        /// \param saveIntermediateResults Pass true if results need to be saved (contours, thresholds) as image output in the processing stage
+        PipelineElement(std::string name, bool saveIntermediateResults);
 
         /// Destructor
         virtual ~PipelineElement();
@@ -33,6 +34,7 @@ namespace Pipeline
 
     protected:
         std::string m_Name;
+        bool m_SaveIntermediateResults;
         std::shared_ptr<void> m_PreviousElementResult;
     };
 }

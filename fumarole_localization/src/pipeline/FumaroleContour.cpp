@@ -18,7 +18,7 @@
 namespace Pipeline
 {
     // Constructor
-    FumaroleContour::FumaroleContour(const std::string &name) : PipelineElement(name)
+    FumaroleContour::FumaroleContour(const std::string &name, bool saveResults) : PipelineElement(name, saveResults)
     {
         // read in min area param
         m_MinAreaFilter = Config::ConfigParser::GetInstance().GetValue<float>("config.pipeline.contour.min_area");
@@ -42,8 +42,10 @@ namespace Pipeline
         // set the result of the processing (contours)
         result = contours;
 
-        // Save contour results
-        SaveContourResults(*contours, filename);
+        // Save contour results if set
+        if (m_SaveIntermediateResults) {
+            SaveContourResults(*contours, filename);
+        }
     }
 
     // Finds contours in the given image

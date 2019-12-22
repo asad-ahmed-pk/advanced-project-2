@@ -21,7 +21,7 @@ namespace Pipeline
     public:
         /// Constructor
         /// \param name The name of the pipeline element
-        HistogramAnalysis(const std::string& name);
+        HistogramAnalysis(const std::string& name, bool saveResults);
 
         ~HistogramAnalysis();
 

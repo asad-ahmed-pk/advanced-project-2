@@ -33,6 +33,7 @@ namespace Evaluation
         // for evaluation of the bounding box detections (not the classification - class labels)
         // each key is the bin number and the value is the count
         std::map<int, std::tuple<int, int>> DetectionMetrics;
+        std::map<float, float> IoUMetrics;
 
         FumaroleDetectionEvaluation();
     };
@@ -45,6 +46,7 @@ namespace Evaluation
         float TotalAverageIoU = 0.0;
         ConfusionMatrix ConfusionMatrix;
         std::map<int, std::tuple<int, int>> DetectionMetrics;
+        std::map<float, float> IoUDetectionMetrics;
         std::vector<FumaroleDetectionEvaluation> Evaluations;
 
         AlgorithmEvaluation();

@@ -22,7 +22,7 @@ namespace Pipeline
     public:
         /// Constructor
         /// \param name The name of this contour pipeline processing element
-        explicit FumaroleContour(const std::string& name);
+        FumaroleContour(const std::string& name, bool saveResults);
 
         /// Destructor
         ~FumaroleContour();

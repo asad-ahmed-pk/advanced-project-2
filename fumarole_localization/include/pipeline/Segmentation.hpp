@@ -19,7 +19,7 @@ namespace Pipeline
     public:
         /// Constructor
         /// \param name The name for this pipeline element
-        explicit Segmentation(const std::string& name);
+        Segmentation(const std::string& name, bool saveResults);
 
         ~Segmentation();
 

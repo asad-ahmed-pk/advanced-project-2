@@ -19,7 +19,7 @@ namespace Pipeline
     const int MAX_RANGES { 4 };
 
     // Constructor
-    HeatThreshold::HeatThreshold(const std::string &name) : PipelineElement(name)
+    HeatThreshold::HeatThreshold(const std::string &name, bool saveResults) : PipelineElement(name, saveResults)
     {
         // read in the heat ranges
         std::string bins = Config::ConfigParser::GetInstance().GetValue<std::string>("config.pipeline.histogram.bins");
@@ -57,13 +57,16 @@ namespace Pipeline
             c++;
         }
 
-        // save intermediate results
-        std::vector<cv::Mat> thresholds;
-        cv::split(output, thresholds);
-        c= 0;
+        // save intermediate results if required
+        if (m_SaveIntermediateResults)
+        {
+            std::vector<cv::Mat> thresholds;
+            cv::split(output, thresholds);
+            c = 0;
 
-        for (int i = 0; i < m_HeatRanges.size(); i++) {
-            SaveResult(thresholds[i], std::to_string(c++) + "_" + filename);
+            for (int i = 0; i < m_HeatRanges.size(); i++) {
+                SaveResult(thresholds[i], std::to_string(c++) + "_" + filename);
+            }
         }
     }
 
@@ -71,7 +74,6 @@ namespace Pipeline
     void HeatThreshold::ThresholdImage(const cv::Mat &input, cv::Mat &output, int channel, int lower, int upper)
     {
         cv::Mat thresholdOutput;
-        //cv::inRange(input, lower, upper, thresholdOutput);
         cv::threshold(input, thresholdOutput, lower, 255, cv::THRESH_TOZERO);
         cv::Vec4b channels;
 

@@ -24,8 +24,9 @@ namespace Pipeline
     public:
         /// Create the default pipeline for this processing task
         /// \param files A map with the key as the file id (name) and the value the file path
+        /// \param saveResults Pass true if pipeline elements are required to save intermediate results as images
         /// \return An instance of a pipeline with the given pipeline elements
-        Pipeline(const std::map<std::string, std::string>& files);
+        Pipeline(const std::map<std::string, std::string>& files, bool saveResults);
 
         /// Destructor
         ~Pipeline();
@@ -41,6 +42,7 @@ namespace Pipeline
         std::map<std::string, std::string> m_Files;
         std::vector<std::unique_ptr<PipelineElement>> m_Elements;
         PipelineLocalizations m_Localizations;
+        bool m_SaveResults;
     };
 }
 

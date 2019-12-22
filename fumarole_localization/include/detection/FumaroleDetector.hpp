@@ -21,8 +21,9 @@ namespace Detection
     class FumaroleDetector
     {
     public:
-        /// Default constructor
-        FumaroleDetector();
+        /// Constructor
+        /// \param saveIntermediateResults Pass true if intermediate results (contours, thresholds, localizations) are to be saved as iamge files
+        explicit FumaroleDetector(bool saveIntermediateResults);
 
         /// Destructor
         ~FumaroleDetector();
@@ -61,6 +62,7 @@ namespace Detection
         float m_MinAreaForHeatedArea;
         float m_OpenVentSearchRadius;
         float m_HiddenVentSearchRadius;
+        bool m_SaveResults;
     };
 }
 
