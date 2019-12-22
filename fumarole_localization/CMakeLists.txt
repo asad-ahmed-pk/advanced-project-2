@@ -42,21 +42,28 @@ list(APPEND IO_SOURCES
         src/io/DatasetLoader.cpp
 )
 
-list(APPEND OTHER_SOURCES
-        src/config/ConfigParser.cpp
-        src/detection/FumaroleDetector.cpp
+list(APPEND EVAL_SOURCES
         src/evaluation/Evaluation.cpp
         src/evaluation/AlgorithmEvaluator.cpp
         src/evaluation/ConfusionMatrix.cpp
+)
+
+list(APPEND OTHER_SOURCES
+        src/config/ConfigParser.cpp
+        src/detection/FumaroleDetector.cpp
         src/model/FumaroleType.cpp
 )
 
 # Executables
 
-# Main program
-add_executable(${PROJECT_NAME} src/main.cpp ${PIPELINE_SOURCES} ${IO_SOURCES} ${OTHER_SOURCES} include/evaluation/Evaluation.hpp)
+# Main user program
+add_executable(${PROJECT_NAME} src/main.cpp ${PIPELINE_SOURCES} ${IO_SOURCES} ${OTHER_SOURCES})
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} ${Boost_LIBRARIES})
 
+# Training program
+add_executable(detector_train src/train.cpp ${PIPELINE_SOURCES} ${IO_SOURCES} ${OTHER_SOURCES})
+target_link_libraries(detector_train ${OpenCV_LIBS} ${Boost_LIBRARIES})
+
 # Testing program
-add_executable(detector_test src/test.cpp ${PIPELINE_SOURCES} ${IO_SOURCES} ${OTHER_SOURCES})
+add_executable(detector_test src/test.cpp ${PIPELINE_SOURCES} ${IO_SOURCES} ${OTHER_SOURCES} ${EVAL_SOURCES})
 target_link_libraries(detector_test ${OpenCV_LIBS} ${Boost_LIBRARIES} Eigen3::Eigen)
