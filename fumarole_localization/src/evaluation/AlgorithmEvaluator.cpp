@@ -161,7 +161,7 @@ namespace Evaluation
         }
     }
 
-    // Compute detection metrics for true positives and false positives
+    // Compute detection metrics for true positives and false positives by varying the location error threshold
     void AlgorithmEvaluator::ComputeDetectionMetrics(const std::vector<Detection::FumaroleDetection> &results,
                                                      const std::vector<Detection::FumaroleDetection>& groundTruth,
                                                      std::map<int, std::tuple<int, int>> &metrics) const
@@ -187,12 +187,10 @@ namespace Evaluation
                 // get l2 distances of Yi with each Xi
                 Eigen::VectorXf distances = (X.rowwise() - Y.row(i)).rowwise().squaredNorm();
 
-                // count distances to obtain the points that fall in the threshold
+                // true positives are all detections that fall within the threshold
                 count = (distances.array() <= t).count();
-                if (count > 0) {
-                    truePositives++;
-                    falsePositives += (count - 1);       // since 1 count is for true positive (the min element)
-                }
+                truePositives = count;
+                falsePositives = results.size() - truePositives;
             }
 
             std::get<0>(metrics[t]) = truePositives;

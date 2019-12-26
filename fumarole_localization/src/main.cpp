@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 {
     // required params check
     if (argc < REQ_PARAMS_COUNT) {
-        std::cout << "\nUsage: fumarole_localization [file path for directory of thermal images]" << std::endl;
+        std::cout << "\nUsage: fumarole_localization [file path for directory of thermal images] [optional: output folder path]\n" << std::endl;
         return 1;
     }
 
