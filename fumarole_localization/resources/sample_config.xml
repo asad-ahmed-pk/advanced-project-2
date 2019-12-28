@@ -15,8 +15,9 @@
     <evaluation>
         <detection>
             <threshold_min>0</threshold_min>
-            <threshold_max>20000</threshold_max>
-            <threshold_step>200</threshold_step>
+            <threshold_max>120000</threshold_max>
+            <threshold_step>500</threshold_step>
+            <iou_threshold_step>0.1</iou_threshold_step>
         </detection>
     </evaluation>
 </config>
