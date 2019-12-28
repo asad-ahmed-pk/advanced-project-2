@@ -33,6 +33,7 @@ namespace Config
 
     private:
         ConfigParser() {}
+        static void CheckAndCreateDefaultConfig();
 
     private:
         std::unique_ptr<boost::property_tree::ptree> m_PropertyTree = nullptr;
