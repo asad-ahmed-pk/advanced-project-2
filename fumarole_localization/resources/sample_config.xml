@@ -4,20 +4,20 @@
             <bins>80 120 190 255</bins>
         </histogram>
         <contour>
-            <min_area>200</min_area>
+            <min_area>160</min_area>
         </contour>
     </pipeline>
     <detection>
         <min_area_heated_area>1200</min_area_heated_area>
-        <open_vent_radius_search>2400</open_vent_radius_search>
-        <hidden_area_radius_search>24000</hidden_area_radius_search>
+        <open_vent_radius_search>105</open_vent_radius_search>
+        <hidden_area_radius_search>260</hidden_area_radius_search>
     </detection>
     <evaluation>
         <detection>
             <threshold_min>0</threshold_min>
-            <threshold_max>120000</threshold_max>
-            <threshold_step>500</threshold_step>
-            <iou_threshold_step>0.1</iou_threshold_step>
+            <threshold_max>1700</threshold_max>
+            <threshold_step>50</threshold_step>
+            <iou_threshold_step>0.01</iou_threshold_step>
         </detection>
     </evaluation>
 </config>

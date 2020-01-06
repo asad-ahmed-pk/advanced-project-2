@@ -185,7 +185,7 @@ namespace Evaluation
             for (int i = 0; i < Y.rows(); i++)
             {
                 // get l2 distances of Yi with each Xi
-                Eigen::VectorXf distances = (X.rowwise() - Y.row(i)).rowwise().squaredNorm();
+                Eigen::VectorXf distances = (X.rowwise() - Y.row(i)).rowwise().norm();
 
                 // true positives are all detections that fall within the threshold
                 count = (distances.array() <= t).count();

@@ -10,7 +10,6 @@
 #include <vector>
 #include <iostream>
 #include <iomanip>
-#include <algorithm>
 #include <numeric>
 #include <boost/filesystem.hpp>
 

@@ -147,7 +147,7 @@ namespace Detection
             return d.Center();
         });
 
-        // get index graph of radius search (flann)
+        // get index graph of radius search
         std::map<int, std::vector<int>> matchedIndices;
         RadiusSearch(centroids, matchedIndices, radius);
 
@@ -158,6 +158,7 @@ namespace Detection
         for (auto iter = matchedIndices.begin(); iter != matchedIndices.end(); iter++)
         {
             used[iter->first] = true;
+            boxes.push_back(detections[iter->first].BoundingBox);
 
             for (int index : iter->second)
             {
@@ -170,7 +171,7 @@ namespace Detection
 
             if (boxes.size() > 1)
             {
-                // build main open-vent detection that encloses these boxes
+                // build new bounding box that encloses these boxes
                 FumaroleDetection detection;
                 detection.Type = type;
                 detection.BoundingBox = EnclosingBoundingBox(boxes);
@@ -188,42 +189,22 @@ namespace Detection
     void FumaroleDetector::RadiusSearch(const std::vector<cv::Point2f> &centroids,
                                         std::map<int, std::vector<int>> &matchedIndices, float radius) const
     {
-        // pack centroids into matrix
-        cv::Mat_<float> points(0, 2);
-        for (const auto& p : centroids) {
-            cv::Mat row = (cv::Mat_<float>(1, 2) << p.x, p.y);
-            points.push_back(row);
-        }
-
-        // perform nearest neighbour lookup from centroids
-        cv::flann::KDTreeIndexParams params(1);
-        cv::flann::Index kdtree(points, params);
-        std::vector<float> queryPoint(2, 0);
-        std::vector<int> indices;
-        std::vector<float> distances;
-
+        float d = 0.0;
         for (int i = 0; i < centroids.size(); i++)
         {
-            // kdtree NN lookup
-            queryPoint[0] = centroids[i].x;
-            queryPoint[1] = centroids[i].y;
-            kdtree.radiusSearch(queryPoint, indices, distances, radius, 10);
-
-            // map all matched indices for this point
-            if (!indices.empty())
+            for (int j = 0; j < centroids.size(); j++)
             {
-                for (int j = 0; j < indices.size(); j++)
-                {
-                    int index = indices[j];
-                    if (index == i || distances[j] == 0) {
-                        continue;
-                    }
-                    matchedIndices[i].push_back(index);
+                // skip self distance
+                if (i == j) {
+                    continue;
+                }
+
+                // calculate euclidean distance between this point and centroid
+                d = sqrt(pow(centroids[i].x - centroids[j].x, 2) + pow(centroids[i].y - centroids[j].y, 2));
+                if (d <= radius) {
+                    matchedIndices[i].push_back(j);
                 }
             }
-
-            indices.clear();
-            distances.clear();
         }
     }
 
