@@ -53,7 +53,6 @@ namespace Detection
         std::vector<FumaroleDetection> DetectHiddenVents(const std::vector<FumaroleDetection>& detections) const;
         std::vector<FumaroleDetection> ClusterDetections(const std::vector<FumaroleDetection>& detections, float radius, Model::FumaroleType type) const;
 
-        cv::Scalar ColorForType(Model::FumaroleType type) const;
         cv::Rect EnclosingBoundingBox(const std::vector<cv::Rect>& boxes) const;
 
         void RadiusSearch(const std::vector<cv::Point2f>& centroids, std::map<int, std::vector<int>>& matchedIndices, float radius) const;

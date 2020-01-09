@@ -8,6 +8,7 @@
 
 #include <string>
 #include <vector>
+#include <opencv4/opencv2/core/types.hpp>
 
 namespace Model
 {
@@ -25,6 +26,10 @@ namespace Model
 
     // Convert enum type to string
     std::string TypeNameString(FumaroleType type);
+
+    // Get class label colour for type
+    // Get the color for the given type
+    cv::Scalar ColorForType(FumaroleType type);
 }
 
 #endif //FUMAROLE_LOCALIZATION_FUMAROLETYPE_HPP

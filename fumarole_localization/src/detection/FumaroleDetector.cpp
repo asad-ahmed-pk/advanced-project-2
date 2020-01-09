@@ -10,10 +10,8 @@
 #include "io/fumarole_data_io.hpp"
 
 #include <map>
-#include <string>
 #include <algorithm>
 #include <boost/filesystem.hpp>
-#include <opencv2/flann/flann.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -224,28 +222,6 @@ namespace Detection
         return cv::Rect(x, y, width, height);
     }
 
-    // Get the color for the given type
-    cv::Scalar FumaroleDetector::ColorForType(Model::FumaroleType type) const
-    {
-        switch (type)
-        {
-            case Model::FumaroleType::FUMAROLE_HOLE:
-                return cv::Scalar(10, 245, 206);
-
-            case Model::FumaroleType::FUMAROLE_HEATED_AREA:
-                return cv::Scalar(40, 80, 230);
-
-            case Model::FumaroleType::FUMAROLE_OPEN_VENT:
-                return cv::Scalar(255, 0, 0);
-
-            case Model::FumaroleType::FUMAROLE_HIDDEN_VENT:
-                return cv::Scalar(222, 114, 47);
-
-            case Model::FumaroleType::UNKNOWN:
-                return cv::Scalar(0, 0, 0);
-        }
-    }
-
     // Save results as images with colors for different classes
     void FumaroleDetector::SaveResults(const Detection::FumaroleDetectionsPerImage &resultMap) const
     {
@@ -270,10 +246,10 @@ namespace Detection
             for (const FumaroleDetection& r : result.second)
             {
                 if (r.Type == Model::FumaroleType::FUMAROLE_HOLE) {
-                    cv::circle(image, r.Center(), FUMAROLE_HOLE_RADIUS, ColorForType(r.Type), DRAW_THICKNESS);
+                    cv::circle(image, r.Center(), FUMAROLE_HOLE_RADIUS, Model::ColorForType(r.Type), DRAW_THICKNESS);
                 }
                 else {
-                    cv::rectangle(image, r.BoundingBox, ColorForType(r.Type), DRAW_THICKNESS);
+                    cv::rectangle(image, r.BoundingBox, Model::ColorForType(r.Type), DRAW_THICKNESS);
                 }
             }
 
